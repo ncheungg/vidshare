@@ -1,0 +1,13 @@
+.input-group {
+  margin-top: 1%;
+}
+
+/* maintains aspect ratio of video*/
+.video-container {
+  padding-bottom: 57.25%;
+  position: relative;
+}
+iframe {
+  position: absolute;
+  padding: 1%;
+}
