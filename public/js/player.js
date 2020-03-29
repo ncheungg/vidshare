@@ -22,9 +22,9 @@ function onYouTubeIframeAPIReady(vId = "WFcjKjTq178") {
       // onStateChange: onPlayerStateChange
     },
     playerVars: {
-      color: "white",
-      controls: 1,
-      modestbranding: 1
+      controls: 0,
+      modestbranding: 1,
+      autoplay: 0
     }
   });
 }

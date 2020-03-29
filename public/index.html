@@ -4,15 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- css -->
     <link rel="stylesheet" href="css/main.css" />
-
-    <!-- bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     />
-
-    <title>Together Tube</title>
+    <title>Vids Together</title>
   </head>
   <body>
     <div class="container">
@@ -38,9 +37,20 @@
         </div>
       </div>
 
-      <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-      <div class="video-container">
+      <div class="embed-responsive embed-responsive-16by9">
+        <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
         <div id="player"></div>
+      </div>
+
+      <!-- video player ui -->
+      <div class="video-player-ui">
+        <button class="btn btn-light" type="button" id="video-player-button">
+          <i class="fa fa-play-circle"></i>
+        </button>
+
+        <button class="btn btn-light" type="button" id="video-player-button">
+          <i class="fa fa-pause-circle"></i>
+        </button>
       </div>
     </div>
 
