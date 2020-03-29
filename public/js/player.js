@@ -1,7 +1,101 @@
-function test() {
-  alert("test message");
+// makes websocket connection
+const socket = io.connect("http://localhost:5000/");
+
+// DOM elements
+const playPauseButton = document.getElementById("play-pause-button");
+const skipBackward = document.getElementById("skip-backward");
+const skipForward = document.getElementById("skip-forward");
+const videoScrubberBox = document.getElementById("video-progress-bar");
+const videoLinkAddressBox = document.getElementById("video-link");
+const submitButton = document.getElementById("submit-video-link");
+
+// Emit events
+
+playPauseButton.addEventListener("click", () => {
+  socket.emit("play-pause");
+});
+
+skipBackward.addEventListener("click", () => {
+  socket.emit("skip-backward");
+});
+
+skipForward.addEventListener("click", () => {
+  socket.emit("skip-forward");
+});
+
+videoLinkAddressBox.addEventListener("keydown", key => {
+  if (key.keyCode !== 13) {
+    const vId = parseVideoLink(videoLinkAddressBox.value);
+    socket.emit("load-new-video", {
+      videoId: vId
+    });
+  }
+});
+
+submitButton.addEventListener("click", () => {
+  const vId = parseVideoLink(videoLinkAddressBox.value);
+  socket.emit("load-new-video", {
+    videoId: vId
+  });
+});
+
+videoScrubberBox.addEventListener("click", () => {
+  const rect = videoScrubberBox.getBoundingClientRect();
+  const x = event.clientX;
+  const fraction = (x - rect.left) / (rect.right - rect.left);
+  const sec = fraction * player.getDuration();
+
+  socket.emit("seek-to", {
+    time: sec
+  });
+});
+
+// listen for socket events
+
+socket.on("play-pause", playPauseVideo);
+socket.on("skip-backward", skipBack5Seconds);
+socket.on("skip-forward", skipForward5Seconds);
+
+socket.on("load-new-video", data => {
+  player.loadVideoById(data);
+});
+
+socket.on("seek-to", data => {
+  const sec = data.time;
+  player.seekTo(sec);
+});
+
+// socket helper functions
+// play && pause
+function playPauseVideo() {
+  if (player.getPlayerState() == 1) {
+    player.pauseVideo();
+
+    // changes button icon
+    playPauseButton.getElementsByTagName("i")[0].className =
+      "fa fa-play-circle";
+  } else {
+    player.playVideo();
+
+    // changes button icon
+    playPauseButton.getElementsByTagName("i")[0].className =
+      "fa fa-pause-circle";
+  }
 }
 
+// skip back 5 seconds
+function skipBack5Seconds() {
+  const time = player.getCurrentTime();
+  player.seekTo(time - 5);
+}
+
+// skip forward 5 seconds
+function skipForward5Seconds() {
+  const time = player.getCurrentTime();
+  player.seekTo(time + 5);
+}
+
+// youtube player api code
 // 2. This code loads the IFrame Player API code asynchronously.
 const tag = document.createElement("script");
 
@@ -51,14 +145,18 @@ function stopVideo() {
   player.stopVideo();
 }
 
+// helper functions
 // parses link into videoId
 function parseVideoLink(link) {
   return link.split("=")[1].split("&")[0];
 }
 
 // parses float into scrubber css string
-function parseScrubberFraction(fraction) {
-  return "width: " + (100 * fraction).toString() + "%";
+function updateScrubberLength(fraction) {
+  const s = "width: " + (100 * fraction).toString() + "%";
+  document
+    .getElementById("video-watched-progress-bar")
+    .setAttribute("style", s);
 }
 
 // loads new video
@@ -82,63 +180,23 @@ document.getElementById("submit-video-link").onclick = function() {
   loadNewVideo();
 };
 
-// play && pause
-document.getElementById("play-pause-button").onclick = function() {
-  if (player.getPlayerState() == 1) {
-    player.pauseVideo();
-
-    // changes button icon
-    document
-      .getElementById("play-pause-button")
-      .getElementsByTagName("i")[0].className = "fa fa-play-circle";
-  } else {
-    player.playVideo();
-
-    // changes button icon
-    document
-      .getElementById("play-pause-button")
-      .getElementsByTagName("i")[0].className = "fa fa-pause-circle";
-  }
-};
-
-// skip back 5 seconds
-document.getElementById("skip-backward").onclick = function() {
-  const time = player.getCurrentTime();
-  player.seekTo(time - 5);
-};
-
-// skip forward 5 seconds
-document.getElementById("skip-forward").onclick = function() {
-  const time = player.getCurrentTime();
-  player.seekTo(time + 5);
-};
-
 // get scrubber click position
-document.getElementById("video-progress-bar").onclick = function() {
-  const rect = document
-    .getElementById("video-progress-bar")
-    .getBoundingClientRect();
-  const x = event.clientX;
-  const fraction = (x - rect.left) / (rect.right - rect.left);
-  const sec = fraction * player.getDuration();
-  const s = parseScrubberFraction(fraction);
+// videoScrubberBox.onclick = function() {
+//   const rect = videoScrubberBox.getBoundingClientRect();
+//   const x = event.clientX;
+//   const fraction = (x - rect.left) / (rect.right - rect.left);
+//   const sec = fraction * player.getDuration();
 
-  player.seekTo(sec);
-  document
-    .getElementById("video-watched-progress-bar")
-    .setAttribute("style", s);
-};
+//   player.seekTo(sec);
+// };
 
 // other functions
 // loop to get scrubber
 function getScrubberLength() {
   const videoLength = player.getDuration();
-  if (player.getPlayerState() == 1 && videoLength > 0) {
+  if (player.getPlayerState() > 0 && videoLength > 0) {
     const fraction = player.getCurrentTime() / videoLength;
-    const s = parseScrubberFraction(fraction);
-    document
-      .getElementById("video-watched-progress-bar")
-      .setAttribute("style", s);
+    updateScrubberLength(fraction);
   }
 }
 window.setInterval(getScrubberLength, 100);
