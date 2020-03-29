@@ -43,28 +43,49 @@
 
       <div class="row">
         <div class="col-auto">
-          <button class="btn btn-light" type="button" id="play-pause-button">
-            <i class="fa fa-pause-circle"></i>
+          <button
+            class="btn btn-light"
+            type="button"
+            id="play-pause-button"
+            title="Play / Pause"
+          >
+            <i class="fa fa-play-circle"></i>
           </button>
         </div>
 
         <div class="col-auto">
-          <button class="btn btn-light" type="button" id="skip-backward">
+          <button
+            class="btn btn-light"
+            type="button"
+            id="skip-backward"
+            title="Skip 5 Seconds"
+          >
             <i class="fa fa-step-backward"></i>
           </button>
         </div>
 
         <div class="col-auto">
-          <button class="btn btn-light" type="button" id="skip-forward">
+          <button
+            class="btn btn-light"
+            type="button"
+            id="skip-forward"
+            title="Skip 5 Seconds"
+          >
             <i class="fa fa-step-forward"></i>
           </button>
         </div>
 
+        <div class="col-auto">
+          <button class="btn btn-light" type="button" id="volume">
+            <i class="fa fa-volume-up"></i>
+          </button>
+        </div>
+
         <div class="col">
-          <div class="progress">
+          <div class="progress" id="video-progress-bar">
             <div
               class="progress-bar"
-              id="video-progress-bar"
+              id="video-watched-progress-bar"
               role="progressbar"
               style="width: 0%"
               aria-valuenow="25"
@@ -75,7 +96,12 @@
         </div>
 
         <div class="col-auto">
-          <button class="btn btn-light" type="button" id="skip-forward">
+          <button
+            class="btn btn-light"
+            type="button"
+            id="fullscreen"
+            title="Fullscreen"
+          >
             <i class="fa fa-expand"></i>
           </button>
         </div>

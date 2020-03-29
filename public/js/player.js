@@ -56,6 +56,11 @@ function parseVideoLink(link) {
   return link.split("=")[1].split("&")[0];
 }
 
+// parses float into scrubber css string
+function parseScrubberFraction(fraction) {
+  return "width: " + (100 * fraction).toString() + "%";
+}
+
 // loads new video
 function loadNewVideo() {
   const link = document.getElementById("video-link").value;
@@ -108,25 +113,32 @@ document.getElementById("skip-forward").onclick = function() {
   player.seekTo(time + 5);
 };
 
-//test functions
-// function updateScrubber() {
-//   console.log("working");
-//   if (player.getPlayerState() == 1 && videoLength > 0) {
-//     const percentage = (player.getCurrentTime() / videoLength) * 100;
-//     const s = "width: " + percentage.toString() + "%";
-//     console.log(s);
-//     document.getElementById("video-progress-bar").setAttribute("style", s);
-//   }
-//   console.log("test");
-// }
+// get scrubber click position
+document.getElementById("video-progress-bar").onclick = function() {
+  const rect = document
+    .getElementById("video-progress-bar")
+    .getBoundingClientRect();
+  const x = event.clientX;
+  const fraction = (x - rect.left) / (rect.right - rect.left);
+  const sec = fraction * player.getDuration();
+  const s = parseScrubberFraction(fraction);
 
-// loop
-window.setInterval(function() {
+  player.seekTo(sec);
+  document
+    .getElementById("video-watched-progress-bar")
+    .setAttribute("style", s);
+};
+
+// other functions
+// loop to get scrubber
+function getScrubberLength() {
   const videoLength = player.getDuration();
   if (player.getPlayerState() == 1 && videoLength > 0) {
-    const percentage = (player.getCurrentTime() / videoLength) * 100;
-    const s = "width: " + percentage.toString() + "%";
-    console.log(s);
-    document.getElementById("video-progress-bar").setAttribute("style", s);
+    const fraction = player.getCurrentTime() / videoLength;
+    const s = parseScrubberFraction(fraction);
+    document
+      .getElementById("video-watched-progress-bar")
+      .setAttribute("style", s);
   }
-}, 200);
+}
+window.setInterval(getScrubberLength, 100);
