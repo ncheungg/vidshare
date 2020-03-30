@@ -141,10 +141,6 @@ function onPlayerReady(event) {
 //   }
 // }
 
-function stopVideo() {
-  player.stopVideo();
-}
-
 // helper functions
 // parses link into videoId
 function parseVideoLink(link) {
@@ -158,37 +154,6 @@ function updateScrubberLength(fraction) {
     .getElementById("video-watched-progress-bar")
     .setAttribute("style", s);
 }
-
-// loads new video
-function loadNewVideo() {
-  const link = document.getElementById("video-link").value;
-  const vId = parseVideoLink(link);
-
-  player.loadVideoById({ videoId: vId });
-}
-
-// waiting functions
-// checks for enter pressed on form input tag
-document.getElementById("video-link").onkeydown = function(event) {
-  if (event.keyCode == 13) {
-    loadNewVideo();
-  }
-};
-
-// on "submit" button click
-document.getElementById("submit-video-link").onclick = function() {
-  loadNewVideo();
-};
-
-// get scrubber click position
-// videoScrubberBox.onclick = function() {
-//   const rect = videoScrubberBox.getBoundingClientRect();
-//   const x = event.clientX;
-//   const fraction = (x - rect.left) / (rect.right - rect.left);
-//   const sec = fraction * player.getDuration();
-
-//   player.seekTo(sec);
-// };
 
 // other functions
 // loop to get scrubber
