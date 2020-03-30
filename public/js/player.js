@@ -1,5 +1,5 @@
 // makes websocket connection
-const socket = io.connect("http://localhost:5000/");
+const socket = io.connect("https://secure-dusk-40036.herokuapp.com:5000/");
 
 // DOM elements
 const playPauseButton = document.getElementById("play-pause-button");
