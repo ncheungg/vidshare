@@ -8,6 +8,8 @@ const skipForward = document.getElementById("skip-forward");
 const videoScrubberBox = document.getElementById("video-progress-bar");
 const videoLinkAddressBox = document.getElementById("video-link");
 const submitButton = document.getElementById("submit-video-link");
+const volumeButton = document.getElementById("volume-button");
+const volumeSlider = document.getElementById("volume-slider");
 
 // Emit events
 
@@ -154,6 +156,37 @@ function updateScrubberLength(fraction) {
     .getElementById("video-watched-progress-bar")
     .setAttribute("style", s);
 }
+
+function showVolumeSlider() {
+  volumeSlider.setAttribute("class", "progress progress-bar-vertical");
+
+  const insideDiv = volumeSlider.getElementsByTagName("div")[0];
+  insideDiv.setAttribute("class", "progress-bar");
+  insideDiv.setAttribute("role", "progressbar");
+  insideDiv.setAttribute("aria-valuemin", "0");
+  insideDiv.setAttribute("aria-valuemax", "100");
+  insideDiv.setAttribute("style", "height: 100%;");
+}
+
+function hideVolumeSlider() {
+  const insideDiv = volumeSlider.getElementsByTagName("div")[0];
+  insideDiv.removeAttribute("class");
+  insideDiv.removeAttribute("role");
+  insideDiv.removeAttribute("aria-valuemin");
+  insideDiv.removeAttribute("aria-valuemax");
+  insideDiv.removeAttribute("style");
+
+  volumeSlider.removeAttribute("class");
+}
+
+// listening functions
+volumeButton.addEventListener("click", () => {
+  if (volumeSlider.getElementsByTagName("div")[0].className == "") {
+    showVolumeSlider();
+  } else {
+    hideVolumeSlider();
+  }
+});
 
 // other functions
 // loop to get scrubber

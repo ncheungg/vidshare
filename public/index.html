@@ -18,33 +18,37 @@
   </head>
   <body>
     <div class="container">
-      <!-- form to enter link -->
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="https://www.youtube.com/watch?v=WFcjKjTq178"
-          aria-label="https://www.youtube.com/watch?v=WFcjKjTq178"
-          aria-describedby="button-addon2"
-          id="video-link"
-        />
-        <div class="input-group-append">
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            id="submit-video-link"
-          >
-            Submit
-          </button>
+      <div class="row">
+        <!-- form to enter link -->
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="https://www.youtube.com/watch?v=WFcjKjTq178"
+            aria-label="https://www.youtube.com/watch?v=WFcjKjTq178"
+            aria-describedby="button-addon2"
+            id="video-link"
+          />
+          <div class="input-group-append">
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="submit-video-link"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="embed-responsive embed-responsive-16by9">
-        <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-        <div id="player"></div>
+      <div class="row">
+        <div class="embed-responsive embed-responsive-16by9">
+          <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+          <div id="player"></div>
+        </div>
       </div>
 
-      <div class="row">
+      <div class="row no-gutters">
         <div class="col-auto">
           <button
             class="btn btn-light"
@@ -79,9 +83,27 @@
         </div>
 
         <div class="col-auto">
-          <button class="btn btn-light" type="button" id="volume">
-            <i class="fa fa-volume-up"></i>
-          </button>
+          <div class="row no-gutters">
+            <div class="col no-gutters">
+              <button class="btn btn-light" type="button" id="volume-button">
+                <i class="fa fa-volume-up"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row no-gutters">
+            <div class="col no-gutters">
+              <div class="progress progress-bar-vertical" id="volume-slider">
+                <div
+                  class="progress-bar"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="height: 50%;"
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="col">
