@@ -10,6 +10,9 @@ const videoLinkAddressBox = document.getElementById("video-link");
 const submitButton = document.getElementById("submit-video-link");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
+const volumeSliderBar = document
+  .getElementById("volume-slider")
+  .getElementsByTagName("div")[0];
 
 // Emit events
 
@@ -157,24 +160,29 @@ function updateScrubberLength(fraction) {
     .setAttribute("style", s);
 }
 
+function updateVolumeBarLength(fraction) {
+  const s = "height: " + (100 * fraction).toString() + "%";
+  volumeSliderBar.setAttribute("style", s);
+}
+
 function showVolumeSlider() {
   volumeSlider.setAttribute("class", "progress progress-bar-vertical");
 
-  const insideDiv = volumeSlider.getElementsByTagName("div")[0];
-  insideDiv.setAttribute("class", "progress-bar");
-  insideDiv.setAttribute("role", "progressbar");
-  insideDiv.setAttribute("aria-valuemin", "0");
-  insideDiv.setAttribute("aria-valuemax", "100");
-  insideDiv.setAttribute("style", "height: 100%;");
+  volumeSliderBar.setAttribute("class", "progress-bar");
+  volumeSliderBar.setAttribute("role", "progressbar");
+  volumeSliderBar.setAttribute("aria-valuemin", "0");
+  volumeSliderBar.setAttribute("aria-valuemax", "100");
+
+  const v = player.getVolume();
+  volumeSliderBar.setAttribute("style", "height: " + v.toString() + "%;");
 }
 
 function hideVolumeSlider() {
-  const insideDiv = volumeSlider.getElementsByTagName("div")[0];
-  insideDiv.removeAttribute("class");
-  insideDiv.removeAttribute("role");
-  insideDiv.removeAttribute("aria-valuemin");
-  insideDiv.removeAttribute("aria-valuemax");
-  insideDiv.removeAttribute("style");
+  volumeSliderBar.removeAttribute("class");
+  volumeSliderBar.removeAttribute("role");
+  volumeSliderBar.removeAttribute("aria-valuemin");
+  volumeSliderBar.removeAttribute("aria-valuemax");
+  volumeSliderBar.removeAttribute("style");
 
   volumeSlider.removeAttribute("class");
 }
@@ -186,6 +194,15 @@ volumeButton.addEventListener("click", () => {
   } else {
     hideVolumeSlider();
   }
+});
+
+volumeSlider.addEventListener("click", () => {
+  const rect = volumeSlider.getBoundingClientRect();
+  const y = event.clientY;
+  const fraction = (y - rect.bottom) / (rect.top - rect.bottom);
+
+  updateVolumeBarLength(fraction);
+  player.setVolume(fraction * 100);
 });
 
 // other functions
