@@ -55,6 +55,8 @@ videoScrubberBox.addEventListener("click", () => {
   });
 });
 
+// emit events ends
+
 // listen for socket events
 
 socket.on("play-pause", playPauseVideo);
@@ -123,7 +125,7 @@ function onYouTubeIframeAPIReady(vId = "WFcjKjTq178") {
     playerVars: {
       controls: 0,
       modestbranding: 1,
-      autoplay: 1,
+      autoplay: 0,
       disablekb: 1
     }
   });
@@ -131,7 +133,7 @@ function onYouTubeIframeAPIReady(vId = "WFcjKjTq178") {
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  // event.target.playVideo();
+  event.target.playVideo();
 }
 
 // 5. The API calls this function when the player's state changes.
