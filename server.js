@@ -38,8 +38,12 @@ io.on("connection", function (socket) {
     }
   });
 
-  socket.on("play-pause", () => {
-    io.sockets.emit("play-pause");
+  socket.on("play-video", () => {
+    io.sockets.emit("play-video");
+  });
+
+  socket.on("pause-video", () => {
+    io.sockets.emit("pause-video");
   });
 
   socket.on("skip-backward", () => {

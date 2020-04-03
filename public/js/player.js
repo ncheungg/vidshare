@@ -1,6 +1,6 @@
 // makes websocket connection
-// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-const socket = io.connect();
+const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+// const socket = io.connect();
 
 // DOM elements
 const playerOverlay = document.getElementById("player-overlay-img");
@@ -18,13 +18,9 @@ const volumeSliderBar = document
 
 // Emit events
 
-playerOverlay.addEventListener("click", () => {
-  socket.emit("play-pause");
-});
+playerOverlay.addEventListener("click", playPauseToggle);
 
-playPauseButton.addEventListener("click", () => {
-  socket.emit("play-pause");
-});
+playPauseButton.addEventListener("click", playPauseToggle);
 
 skipBackward.addEventListener("click", () => {
   socket.emit("skip-backward");
@@ -65,7 +61,8 @@ videoScrubberBox.addEventListener("click", () => {
 
 // listen for socket events
 
-socket.on("play-pause", playPauseVideo);
+socket.on("play-video", playVideo);
+socket.on("pause-video", pauseVideo);
 socket.on("skip-backward", skipBack5Seconds);
 socket.on("skip-forward", skipForward5Seconds);
 
@@ -87,23 +84,44 @@ socket.on("get-player-data", function () {
 });
 
 // socket helper functions
-// set player data
-// play && pause
-function playPauseVideo() {
+// onPlayPauseButtonClick
+function playPauseToggle() {
+  console.log("working");
   if (player.getPlayerState() == 1) {
-    player.pauseVideo();
-
-    // changes button icon
-    playPauseButton.getElementsByTagName("i")[0].className =
-      "fa fa-play-circle";
+    socket.emit("pause-video");
   } else {
-    player.playVideo();
-
-    // changes button icon
-    playPauseButton.getElementsByTagName("i")[0].className =
-      "fa fa-pause-circle";
+    socket.emit("play-video");
   }
 }
+
+// play video
+function playVideo() {
+  player.playVideo();
+  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
+}
+
+// pause video
+function pauseVideo() {
+  player.pauseVideo();
+  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
+}
+
+// // play && pause
+// function playPauseVideo() {
+//   if (player.getPlayerState() == 1) {
+//     player.pauseVideo();
+
+//     // changes button icon
+//     playPauseButton.getElementsByTagName("i")[0].className =
+//       "fa fa-play-circle";
+//   } else {
+//     player.playVideo();
+
+//     // changes button icon
+//     playPauseButton.getElementsByTagName("i")[0].className =
+//       "fa fa-pause-circle";
+//   }
+// }
 
 // skip back 5 seconds
 function skipBack5Seconds() {
