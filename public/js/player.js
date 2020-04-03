@@ -129,7 +129,9 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 let player;
 function onYouTubeIframeAPIReady() {
-  socket.emit("get-player-data", function (data) {
+  socket.emit("get-player-data", (data) => {
+    console.log(data);
+
     player = new YT.Player("player", {
       width: "100%",
       height: "100%",
