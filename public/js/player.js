@@ -105,23 +105,6 @@ function pauseVideo() {
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
 }
 
-// // play && pause
-// function playPauseVideo() {
-//   if (player.getPlayerState() == 1) {
-//     player.pauseVideo();
-
-//     // changes button icon
-//     playPauseButton.getElementsByTagName("i")[0].className =
-//       "fa fa-play-circle";
-//   } else {
-//     player.playVideo();
-
-//     // changes button icon
-//     playPauseButton.getElementsByTagName("i")[0].className =
-//       "fa fa-pause-circle";
-//   }
-// }
-
 // skip back 5 seconds
 function skipBack5Seconds() {
   const time = player.getCurrentTime();
@@ -241,8 +224,12 @@ volumeButton.addEventListener("click", () => {
 volumeSlider.addEventListener("click", () => {
   const rect = volumeSlider.getBoundingClientRect();
   const y = event.clientY;
-  // added 10 px from rect bottom so that any click near the bottom would register as mute
-  const fraction = (y - rect.bottom + 10) / (rect.top - rect.bottom + 10);
+  let fraction = (y - rect.bottom) / (rect.top - rect.bottom);
+  if (fraction > 0.9) {
+    fraction = 1;
+  } else if (fraction < 0.1) {
+    fraction = 0;
+  }
 
   updateVolumeBarLength(fraction);
   player.setVolume(fraction * 100);
