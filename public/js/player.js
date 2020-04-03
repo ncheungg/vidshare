@@ -96,13 +96,13 @@ function playPauseToggle() {
 // play video
 function playVideo() {
   player.playVideo();
-  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
+  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
 }
 
 // pause video
 function pauseVideo() {
   player.pauseVideo();
-  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
+  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
 }
 
 // // play && pause
