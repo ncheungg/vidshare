@@ -86,7 +86,6 @@ socket.on("get-player-data", function () {
 // socket helper functions
 // onPlayPauseButtonClick
 function playPauseToggle() {
-  console.log("working");
   if (player.getPlayerState() == 1) {
     socket.emit("pause-video");
   } else {
@@ -148,8 +147,6 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 let player;
 function onYouTubeIframeAPIReady() {
   socket.emit("get-player-data", (data) => {
-    console.log(data);
-
     player = new YT.Player("player", {
       width: "100%",
       height: "100%",
