@@ -1,7 +1,9 @@
 // makes websocket connection
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+const socket = io.connect();
 
 // DOM elements
+const playerOverlay = document.getElementById("player-overlay-img");
 const playPauseButton = document.getElementById("play-pause-button");
 const skipBackward = document.getElementById("skip-backward");
 const skipForward = document.getElementById("skip-forward");
@@ -16,6 +18,10 @@ const volumeSliderBar = document
 
 // Emit events
 
+playerOverlay.addEventListener("click", () => {
+  socket.emit("play-pause");
+});
+
 playPauseButton.addEventListener("click", () => {
   socket.emit("play-pause");
 });
@@ -28,11 +34,11 @@ skipForward.addEventListener("click", () => {
   socket.emit("skip-forward");
 });
 
-videoLinkAddressBox.addEventListener("keydown", key => {
+videoLinkAddressBox.addEventListener("keydown", (key) => {
   if (key.keyCode !== 13) {
     const vId = parseVideoLink(videoLinkAddressBox.value);
     socket.emit("load-new-video", {
-      videoId: vId
+      videoId: vId,
     });
   }
 });
@@ -40,7 +46,7 @@ videoLinkAddressBox.addEventListener("keydown", key => {
 submitButton.addEventListener("click", () => {
   const vId = parseVideoLink(videoLinkAddressBox.value);
   socket.emit("load-new-video", {
-    videoId: vId
+    videoId: vId,
   });
 });
 
@@ -51,7 +57,7 @@ videoScrubberBox.addEventListener("click", () => {
   const sec = fraction * player.getDuration();
 
   socket.emit("seek-to", {
-    time: sec
+    time: sec,
   });
 });
 
@@ -63,16 +69,25 @@ socket.on("play-pause", playPauseVideo);
 socket.on("skip-backward", skipBack5Seconds);
 socket.on("skip-forward", skipForward5Seconds);
 
-socket.on("load-new-video", data => {
+socket.on("load-new-video", (data) => {
   player.loadVideoById(data);
 });
 
-socket.on("seek-to", data => {
+socket.on("seek-to", (data) => {
   const sec = data.time;
   player.seekTo(sec);
 });
 
+socket.on("get-player-data", function () {
+  const vId = player.getVideoUrl().split("=")[1];
+  const playerState = player.getPlayerState();
+  const time = player.getCurrentTime();
+
+  socket.emit("receive-player-data", { vId, time, playerState });
+});
+
 // socket helper functions
+// set player data
 // play && pause
 function playPauseVideo() {
   if (player.getPlayerState() == 1) {
@@ -113,21 +128,29 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // 3. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 let player;
-function onYouTubeIframeAPIReady(vId = "WFcjKjTq178") {
-  player = new YT.Player("player", {
-    width: "100%",
-    height: "100%",
-    videoId: vId,
-    events: {
-      onReady: onPlayerReady
-      // onStateChange: onPlayerStateChange
-    },
-    playerVars: {
-      controls: 0,
-      modestbranding: 1,
-      autoplay: 0,
-      disablekb: 1
-    }
+function onYouTubeIframeAPIReady() {
+  socket.emit("get-player-data", function (data) {
+    player = new YT.Player("player", {
+      width: "100%",
+      height: "100%",
+      videoId: data.vId,
+      events: {
+        onReady: () => {
+          player.seekTo(data.time);
+          if (data.playerState == 1) {
+            player.playVideo();
+          }
+        },
+        // onStateChange: onPlayerStateChange
+      },
+      playerVars: {
+        controls: 0,
+        modestbranding: 1,
+        autoplay: 0,
+        disablekb: 1,
+        rel: 0,
+      },
+    });
   });
 }
 
@@ -201,7 +224,8 @@ volumeButton.addEventListener("click", () => {
 volumeSlider.addEventListener("click", () => {
   const rect = volumeSlider.getBoundingClientRect();
   const y = event.clientY;
-  const fraction = (y - rect.bottom) / (rect.top - rect.bottom);
+  // added 10 px from rect bottom so that any click near the bottom would register as mute
+  const fraction = (y - rect.bottom + 10) / (rect.top - rect.bottom + 10);
 
   updateVolumeBarLength(fraction);
   player.setVolume(fraction * 100);

@@ -10,10 +10,33 @@ const server = app.listen(process.env.PORT || 5000, () =>
 // static files
 app.use(express.static("public"));
 
+// variables
+let connectedUserList = [];
+
 // socket setup
 const io = socket(server);
-io.on("connection", function(socket) {
-  console.log("made a socket connection", socket.id);
+io.on("connection", function (socket) {
+  // on connection runs this code
+  console.log("connected with socket", socket.id);
+  connectedUserList.push(socket);
+
+  // socket functions
+  socket.on("disconnect", () => {
+    connectedUserList.splice(connectedUserList.indexOf(socket), 1);
+    console.log("disconnected with", socket.id);
+  });
+
+  socket.on("get-player-data", function (fn) {
+    if (connectedUserList.length > 1) {
+      const firstSocket = connectedUserList[0];
+      io.sockets.to(firstSocket.id).emit("get-player-data");
+      firstSocket.on("receive-player-data", (data) => {
+        fn(data);
+      });
+    } else {
+      fn({ vId: "WFcjKjTq178", time: 0, playerState: 1 });
+    }
+  });
 
   socket.on("play-pause", () => {
     io.sockets.emit("play-pause");
@@ -27,11 +50,15 @@ io.on("connection", function(socket) {
     io.sockets.emit("skip-forward");
   });
 
-  socket.on("seek-to", data => {
+  socket.on("seek-to", (data) => {
     io.sockets.emit("seek-to", data);
   });
 
-  socket.on("load-new-video", data => {
+  socket.on("load-new-video", (data) => {
     io.sockets.emit("load-new-video", data);
   });
+});
+
+io.on("disconnect", function (socket) {
+  console.log("bye bye");
 });
