@@ -1,14 +1,16 @@
-// variables
+// -------------------- variables --------------------
 let i;
 let player;
 let iframeDiv;
+// -------------------- variables --------------------
 
+// -------------------- websocket --------------------
 // makes websocket connection
-// change depending on localhost or heroku app
 const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
 // const socket = io.connect("https://localhost:5000");
+// -------------------- websocket --------------------
 
-// DOM elements
+// -------------------- DOM elements --------------------
 const playerOverlay = document.getElementById("player-overlay-img");
 const playPauseButton = document.getElementById("play-pause-button");
 const skipBackward = document.getElementById("skip-backward");
@@ -23,8 +25,9 @@ const volumeSlider = document.getElementById("volume-slider");
 const volumeSliderBar = document
   .getElementById("volume-slider")
   .getElementsByTagName("div")[0];
+// -------------------- DOM elements --------------------
 
-// Emit events
+// -------------------- emit on DOM event --------------------
 
 playerOverlay.addEventListener("click", playPauseToggle);
 
@@ -63,18 +66,19 @@ videoScrubberBox.addEventListener("click", () => {
   socket.emit("seek-to", sec);
 });
 
-// emit events ends
+// -------------------- emit on DOM event --------------------
 
-// listen for socket events
-
+// -------------------- listen for socket events --------------------
 socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
+socket.on("get-player-data", sendOutPlayerData);
 
 socket.on("seek-to", (data) => {
   player.seekTo(data);
 });
 
 socket.on("update-user-list", (data) => {
+  // finds difference between front end HTML and back end server, makes adjustments
   const difference = data - userPanel.childElementCount;
 
   if (difference > 0) {
@@ -91,18 +95,18 @@ socket.on("update-user-list", (data) => {
 socket.on("load-new-video", (data) => {
   player.loadVideoById(data);
 });
+// -------------------- listen for socket events --------------------
 
-socket.on("get-player-data", function () {
+// -------------------- helper functions for socket events --------------------
+// sends out player data
+function sendOutPlayerData() {
   const vId = player.getVideoUrl().split("=")[1];
   const playerState = player.getPlayerState();
   const time = player.getCurrentTime();
 
   socket.emit("receive-player-data", { vId, time, playerState });
-});
-
-// socket helper functions
+}
 // adds user to user list
-
 function addUserToList() {
   const img = document.createElement("img");
   img.src = "img/profilepic.png";
@@ -137,8 +141,9 @@ function pauseVideo() {
   player.pauseVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
 }
+// -------------------- helper functions for socket events --------------------
 
-// youtube player api code
+// -------------------- youtube player api code --------------------
 // 2. This code loads the IFrame Player API code asynchronously.
 const tag = document.createElement("script");
 
@@ -192,8 +197,9 @@ function onPlayerReady(event) {
 //     done = true;
 //   }
 // }
+// -------------------- youtube player api code --------------------
 
-// helper functions
+// -------------------- helper functions --------------------
 // parses link into videoId
 function parseVideoLink(link) {
   return link.split("=")[1].split("&")[0];
@@ -242,6 +248,7 @@ function toggleVolumeSlider() {
   }
 }
 
+// changes volume based on cursor position
 function changeVolume() {
   const rect = volumeSlider.getBoundingClientRect();
   const y = event.clientY;
@@ -268,17 +275,17 @@ function toggleFullscreen() {
     requestFullscreen.bind(iframeDiv)();
   }
 }
+// -------------------- helper functions --------------------
 
-// helper functions end
-
-// listening functions
+// -------------------- event listener functions --------------------
 volumeButton.addEventListener("click", toggleVolumeSlider);
 
 volumeSlider.addEventListener("click", changeVolume);
 
 fullscreenButton.addEventListener("click", toggleFullscreen);
+// -------------------- event listener functions --------------------
 
-// other functions
+// -------------------- other functions --------------------
 // loop to get scrubber
 function getScrubberLength() {
   const videoLength = player.getDuration();
@@ -288,3 +295,4 @@ function getScrubberLength() {
   }
 }
 window.setInterval(getScrubberLength, 100);
+// -------------------- other functions --------------------
