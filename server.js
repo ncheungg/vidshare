@@ -19,11 +19,13 @@ io.on("connection", function (socket) {
   // on connection runs this code
   console.log("connected with socket", socket.id);
   connectedUserList.push(socket);
+  io.sockets.emit("update-user-list", connectedUserList.length);
 
   // socket functions
   socket.on("disconnect", () => {
     connectedUserList.splice(connectedUserList.indexOf(socket), 1);
     console.log("disconnected with", socket.id);
+    io.sockets.emit("update-user-list", connectedUserList.length);
   });
 
   socket.on("get-player-data", function (fn) {

@@ -18,6 +18,20 @@
   z-index: 10;
 }
 
+#connected-user-panel {
+  background-color: #eeeeee;
+}
+
+#connected-user-panel h6 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.flex-wrap img {
+  width: 40%;
+  margin: 5%;
+}
+
 #video-progress-bar {
   /* add 11px to top margin from .col-auto */
   margin: 21px 10px 10px 10px;

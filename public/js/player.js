@@ -1,6 +1,10 @@
+// variables
+let i;
+
 // makes websocket connection
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect();
+// change depending on localhost or heroku app
+// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+const socket = io.connect();
 
 // DOM elements
 const playerOverlay = document.getElementById("player-overlay-img");
@@ -10,6 +14,7 @@ const skipForward = document.getElementById("skip-forward");
 const videoScrubberBox = document.getElementById("video-progress-bar");
 const videoLinkAddressBox = document.getElementById("video-link");
 const submitButton = document.getElementById("submit-video-link");
+const userPanel = document.getElementById("display-connected-users");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeSliderBar = document
@@ -65,6 +70,20 @@ socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
 socket.on("skip-backward", skipBack5Seconds);
 socket.on("skip-forward", skipForward5Seconds);
+socket.on("update-user-list", (data) => {
+  const difference = data - userPanel.childElementCount;
+  console.log(data, difference);
+
+  if (difference > 0) {
+    for (i = 0; i < difference; i++) {
+      addUserToList();
+    }
+  } else if (difference < 0) {
+    for (i = 0; i > difference; i--) {
+      removeUserFromList();
+    }
+  }
+});
 
 socket.on("load-new-video", (data) => {
   player.loadVideoById(data);
@@ -84,6 +103,22 @@ socket.on("get-player-data", function () {
 });
 
 // socket helper functions
+// adds user to user list
+
+function addUserToList() {
+  const img = document.createElement("img");
+  img.src = "img/profilepic.png";
+
+  userPanel.appendChild(img);
+}
+
+// removes user from user list
+function removeUserFromList() {
+  if (userPanel.lastElementChild) {
+    userPanel.removeChild(userPanel.lastElementChild);
+  }
+}
+
 // onPlayPauseButtonClick
 function playPauseToggle() {
   if (player.getPlayerState() == 1) {
