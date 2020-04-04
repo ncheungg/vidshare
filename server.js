@@ -48,14 +48,6 @@ io.on("connection", function (socket) {
     io.sockets.emit("pause-video");
   });
 
-  socket.on("skip-backward", () => {
-    io.sockets.emit("skip-backward");
-  });
-
-  socket.on("skip-forward", () => {
-    io.sockets.emit("skip-forward");
-  });
-
   socket.on("seek-to", (data) => {
     io.sockets.emit("seek-to", data);
   });

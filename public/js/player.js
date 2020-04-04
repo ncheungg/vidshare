@@ -28,11 +28,11 @@ playerOverlay.addEventListener("click", playPauseToggle);
 playPauseButton.addEventListener("click", playPauseToggle);
 
 skipBackward.addEventListener("click", () => {
-  socket.emit("skip-backward");
+  socket.emit("seek-to", player.getCurrentTime() - 5);
 });
 
 skipForward.addEventListener("click", () => {
-  socket.emit("skip-forward");
+  socket.emit("seek-to", player.getCurrentTime() + 5);
 });
 
 videoLinkAddressBox.addEventListener("keydown", (key) => {
@@ -57,9 +57,7 @@ videoScrubberBox.addEventListener("click", () => {
   const fraction = (x - rect.left) / (rect.right - rect.left);
   const sec = fraction * player.getDuration();
 
-  socket.emit("seek-to", {
-    time: sec,
-  });
+  socket.emit("seek-to", sec);
 });
 
 // emit events ends
@@ -68,8 +66,11 @@ videoScrubberBox.addEventListener("click", () => {
 
 socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
-socket.on("skip-backward", skipBack5Seconds);
-socket.on("skip-forward", skipForward5Seconds);
+
+socket.on("seek-to", (data) => {
+  player.seekTo(data);
+});
+
 socket.on("update-user-list", (data) => {
   const difference = data - userPanel.childElementCount;
   console.log(data, difference);
@@ -87,11 +88,6 @@ socket.on("update-user-list", (data) => {
 
 socket.on("load-new-video", (data) => {
   player.loadVideoById(data);
-});
-
-socket.on("seek-to", (data) => {
-  const sec = data.time;
-  player.seekTo(sec);
 });
 
 socket.on("get-player-data", function () {
@@ -138,18 +134,6 @@ function playVideo() {
 function pauseVideo() {
   player.pauseVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
-}
-
-// skip back 5 seconds
-function skipBack5Seconds() {
-  const time = player.getCurrentTime();
-  player.seekTo(time - 5);
-}
-
-// skip forward 5 seconds
-function skipForward5Seconds() {
-  const time = player.getCurrentTime();
-  player.seekTo(time + 5);
 }
 
 // youtube player api code
