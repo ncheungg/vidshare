@@ -3,8 +3,8 @@ let i;
 
 // makes websocket connection
 // change depending on localhost or heroku app
-// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-const socket = io.connect();
+const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+// const socket = io.connect();
 
 // DOM elements
 const playerOverlay = document.getElementById("player-overlay-img");
