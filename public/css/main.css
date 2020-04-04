@@ -15,11 +15,12 @@
   width: 100%;
   height: 100%;
   bottom: 0%;
-  z-index: 10;
+  z-index: 1;
 }
 
 #connected-user-panel {
   background-color: #eeeeee;
+  margin-left: 1%;
 }
 
 #connected-user-panel h6 {

@@ -1,16 +1,19 @@
 // variables
 let i;
+let player;
+let iframeDiv;
 
 // makes websocket connection
 // change depending on localhost or heroku app
-// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-const socket = io.connect();
+const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+// const socket = io.connect("https://localhost:5000");
 
 // DOM elements
 const playerOverlay = document.getElementById("player-overlay-img");
 const playPauseButton = document.getElementById("play-pause-button");
 const skipBackward = document.getElementById("skip-backward");
 const skipForward = document.getElementById("skip-forward");
+const fullscreenButton = document.getElementById("fullscreen");
 const videoScrubberBox = document.getElementById("video-progress-bar");
 const videoLinkAddressBox = document.getElementById("video-link");
 const submitButton = document.getElementById("submit-video-link");
@@ -73,7 +76,6 @@ socket.on("seek-to", (data) => {
 
 socket.on("update-user-list", (data) => {
   const difference = data - userPanel.childElementCount;
-  console.log(data, difference);
 
   if (difference > 0) {
     for (i = 0; i < difference; i++) {
@@ -146,7 +148,6 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // 3. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
-let player;
 function onYouTubeIframeAPIReady() {
   socket.emit("get-player-data", (data) => {
     player = new YT.Player("player", {
@@ -159,6 +160,8 @@ function onYouTubeIframeAPIReady() {
           if (data.playerState == 1) {
             player.playVideo();
           }
+
+          iframeDiv = document.getElementById("outer-player-div");
         },
         // onStateChange: onPlayerStateChange
       },
@@ -231,19 +234,20 @@ function hideVolumeSlider() {
   volumeSlider.removeAttribute("class");
 }
 
-// listening functions
-volumeButton.addEventListener("click", () => {
+function toggleVolumeSlider() {
   if (volumeSlider.getElementsByTagName("div")[0].className == "") {
     showVolumeSlider();
   } else {
     hideVolumeSlider();
   }
-});
+}
 
-volumeSlider.addEventListener("click", () => {
+function changeVolume() {
   const rect = volumeSlider.getBoundingClientRect();
   const y = event.clientY;
   let fraction = (y - rect.bottom) / (rect.top - rect.bottom);
+
+  // adjusts for user discrepancy
   if (fraction > 0.9) {
     fraction = 1;
   } else if (fraction < 0.1) {
@@ -252,7 +256,27 @@ volumeSlider.addEventListener("click", () => {
 
   updateVolumeBarLength(fraction);
   player.setVolume(fraction * 100);
-});
+}
+
+function toggleFullscreen() {
+  const requestFullscreen =
+    iframeDiv.requestFullscreen ||
+    iframeDiv.mozRequestFullScreen ||
+    iframeDiv.webkitRequestFullscreen ||
+    iframeDiv.msRequestFullscreen;
+  if (requestFullscreen) {
+    requestFullscreen.bind(iframeDiv)();
+  }
+}
+
+// helper functions end
+
+// listening functions
+volumeButton.addEventListener("click", toggleVolumeSlider);
+
+volumeSlider.addEventListener("click", changeVolume);
+
+fullscreenButton.addEventListener("click", toggleFullscreen);
 
 // other functions
 // loop to get scrubber
