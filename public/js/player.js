@@ -5,9 +5,8 @@ let iframeDiv;
 // -------------------- variables --------------------
 
 // -------------------- websocket --------------------
-// makes websocket connection
 const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("https://localhost:5000");
+// const socket = io.connect();
 // -------------------- websocket --------------------
 
 // -------------------- DOM elements --------------------
