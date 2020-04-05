@@ -2,80 +2,41 @@
 let i;
 let player;
 let iframeDiv;
+let roomCode;
 // -------------------- variables --------------------
 
-// -------------------- websocket --------------------
+// -------------------- parse URL parameters --------------------
+function getUrlParameters() {
+  const params = window.location.search.substring(1).split("&");
+  for (i = 0; i < params.length; i++) {
+    const param = params[i].split("=");
+    if (param[0] == "joinRoom") {
+      roomCode = param[1];
+      break;
+    }
+  }
+}
+// -------------------- parse URL parameters --------------------
+
+// -------------------- connect to websocket --------------------
 const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
 // const socket = io.connect("http://localhost:5000/");
-// -------------------- websocket --------------------
 
-// -------------------- DOM elements --------------------
-const playerOverlay = document.getElementById("player-overlay-img");
-const playPauseButton = document.getElementById("play-pause-button");
-const skipBackward = document.getElementById("skip-backward");
-const skipForward = document.getElementById("skip-forward");
-const fullscreenButton = document.getElementById("fullscreen");
-const videoScrubberBox = document.getElementById("video-progress-bar");
-const videoLinkAddressBox = document.getElementById("video-link");
-const submitButton = document.getElementById("submit-video-link");
-const userPanel = document.getElementById("display-connected-users");
-const volumeButton = document.getElementById("volume-button");
-const volumeSlider = document.getElementById("volume-slider");
-const volumeSliderBar = document
-  .getElementById("volume-slider")
-  .getElementsByTagName("div")[0];
-// -------------------- DOM elements --------------------
-
-// -------------------- emit on DOM event --------------------
-
-playerOverlay.addEventListener("click", playPauseToggle);
-
-playPauseButton.addEventListener("click", playPauseToggle);
-
-skipBackward.addEventListener("click", () => {
-  socket.emit("seek-to", player.getCurrentTime() - 5);
+// gets data from url and sends to socket.io server
+getUrlParameters();
+socket.on("connect", () => {
+  socket.emit("join-room", roomCode);
 });
-
-skipForward.addEventListener("click", () => {
-  socket.emit("seek-to", player.getCurrentTime() + 5);
-});
-
-videoLinkAddressBox.addEventListener("keydown", (key) => {
-  if (key.keyCode == 13) {
-    const vId = parseVideoLink(videoLinkAddressBox.value);
-    socket.emit("load-new-video", vId);
-  }
-});
-
-submitButton.addEventListener("click", () => {
-  const vId = parseVideoLink(videoLinkAddressBox.value);
-  socket.emit("load-new-video", vId);
-});
-
-videoScrubberBox.addEventListener("click", () => {
-  const rect = videoScrubberBox.getBoundingClientRect();
-  const x = event.clientX;
-  const fraction = (x - rect.left) / (rect.right - rect.left);
-  const sec = fraction * player.getDuration();
-
-  socket.emit("seek-to", sec);
-});
-
-// -------------------- emit on DOM event --------------------
+// -------------------- connect to websocket --------------------
 
 // -------------------- listen for socket events --------------------
 socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
-socket.on("get-player-data", sendOutPlayerData);
 
-socket.on("seek-to", (data) => {
-  player.seekTo(data);
-});
-
-socket.on("update-user-list", (data) => {
-  // finds difference between front end HTML and back end server, makes adjustments
+socket.on("update-user-count", (data) => {
   const difference = data - userPanel.childElementCount;
 
+  // adds or removes profilepic.png elements
   if (difference > 0) {
     for (i = 0; i < difference; i++) {
       addUserToList();
@@ -87,8 +48,20 @@ socket.on("update-user-list", (data) => {
   }
 });
 
+socket.on("seek-to", (data) => {
+  player.seekTo(data);
+});
+
 socket.on("load-new-video", (data) => {
   player.loadVideoById({ videoId: data });
+});
+
+socket.on("get-player-data", (id) => {
+  const vId = player.getVideoUrl().split("=")[1];
+  const playerState = player.getPlayerState();
+  const time = player.getCurrentTime();
+
+  socket.emit("receive-player-data", { vId, playerState, time, id });
 });
 // -------------------- listen for socket events --------------------
 
@@ -119,9 +92,9 @@ function removeUserFromList() {
 // onPlayPauseButtonClick
 function playPauseToggle() {
   if (player.getPlayerState() == 1) {
-    socket.emit("pause-video");
+    socket.emit("pause-video", roomCode);
   } else {
-    socket.emit("play-video");
+    socket.emit("play-video", roomCode);
   }
 }
 
@@ -138,6 +111,61 @@ function pauseVideo() {
 }
 // -------------------- helper functions for socket events --------------------
 
+// -------------------- DOM elements --------------------
+const roomCodeDisplay = document.getElementById("room-code");
+const playerOverlay = document.getElementById("player-overlay-img");
+const playPauseButton = document.getElementById("play-pause-button");
+const skipBackward = document.getElementById("skip-backward");
+const skipForward = document.getElementById("skip-forward");
+const fullscreenButton = document.getElementById("fullscreen");
+const videoScrubberBox = document.getElementById("video-progress-bar");
+const videoInputBox = document.getElementById("video-link");
+const submitButton = document.getElementById("submit-video-link");
+const userPanel = document.getElementById("display-connected-users");
+const volumeButton = document.getElementById("volume-button");
+const volumeSlider = document.getElementById("volume-slider");
+const volumeSliderBar = document
+  .getElementById("volume-slider")
+  .getElementsByTagName("div")[0];
+// -------------------- DOM elements --------------------
+
+// -------------------- emit on DOM event --------------------
+playerOverlay.addEventListener("click", playPauseToggle);
+
+playPauseButton.addEventListener("click", playPauseToggle);
+
+skipBackward.addEventListener("click", () => {
+  const time = player.getCurrentTime() - 5;
+  socket.emit("seek-to", { roomCode, time });
+});
+
+skipForward.addEventListener("click", () => {
+  const time = player.getCurrentTime() + 5;
+  socket.emit("seek-to", { roomCode, time });
+});
+
+videoInputBox.addEventListener("keydown", (key) => {
+  if (key.keyCode == 13) {
+    const vId = parseVideoLink(videoInputBox.value);
+    socket.emit("load-new-video", { roomCode, vId });
+  }
+});
+
+submitButton.addEventListener("click", () => {
+  const vId = parseVideoLink(videoInputBox.value);
+  socket.emit("load-new-video", { roomCode, vId });
+});
+
+videoScrubberBox.addEventListener("click", () => {
+  const rect = videoScrubberBox.getBoundingClientRect();
+  const x = event.clientX;
+  const fraction = (x - rect.left) / (rect.right - rect.left);
+  const time = fraction * player.getDuration();
+
+  socket.emit("seek-to", { roomCode, time });
+});
+// -------------------- emit on DOM event --------------------
+
 // -------------------- youtube player api code --------------------
 // 2. This code loads the IFrame Player API code asynchronously.
 const tag = document.createElement("script");
@@ -149,7 +177,11 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // 3. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 function onYouTubeIframeAPIReady() {
-  socket.emit("get-player-data", (data) => {
+  // updates room code on side panel
+  roomCodeDisplay.innerHTML = roomCode;
+
+  socket.emit("get-player-data", roomCode);
+  socket.on("receive-player-data", (data) => {
     player = new YT.Player("player", {
       width: "100%",
       height: "100%",

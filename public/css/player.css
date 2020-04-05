@@ -28,6 +28,12 @@
   text-align: center;
 }
 
+#room-code {
+  font-size: 14px;
+  font-weight: bold;
+  background: #dddddd;
+}
+
 .flex-wrap img {
   width: 40%;
   margin: 5%;
