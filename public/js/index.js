@@ -49,7 +49,7 @@ function changeToJoinRoomTab() {
   form.className = "form-control";
   form.id = "room-code-input";
   form.setAttribute("type", "search");
-  form.setAttribute("placeholder", "ABCD");
+  form.setAttribute("placeholder", "YFc8");
   form.setAttribute("onsearch", "joinRoom()");
 
   const buttonDiv = document.createElement("div");
@@ -80,7 +80,6 @@ function createRoom() {
 function joinRoom() {
   const form = document.getElementById("room-code-input");
   socket.emit("check-room", form.value, (roomExists) => {
-    console.log(roomExists);
     if (roomExists) {
       location.href = "player.html?joinRoom=" + form.value;
     } else {

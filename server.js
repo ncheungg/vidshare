@@ -16,6 +16,8 @@ app.use(express.static("public"));
 function joinSocketToRoom(socket, roomCode) {
   socket.join(roomCode);
   updateUserLengths(roomCode);
+
+  console.log("joined", socket.id, "to room", roomCode);
 }
 
 function updateUserLengths(roomCode) {
@@ -52,6 +54,7 @@ io.on("connection", function (socket) {
     }
 
     fn(roomCode);
+    console.log("created room", roomCode);
   });
 
   socket.on("check-room", (roomCode, fn) => {
@@ -66,7 +69,6 @@ io.on("connection", function (socket) {
 
   socket.on("get-player-data", (roomCode) => {
     const rooms = io.sockets.adapter.rooms;
-    console.log("nigger", rooms);
 
     if (rooms.length > 1) {
       // gets socket that is not itself
@@ -97,18 +99,20 @@ io.on("connection", function (socket) {
     for (let i = 0; i < roomCodes.length; i++) {
       updateUserLengths(roomCodes[i]);
     }
+
+    console.log(socket.id, "disconnected");
   });
 
   socket.on("play-video", (roomCode) => {
     io.in(roomCode).emit("play-video");
 
-    console.log("playing video");
+    console.log("playing video on", roomCode);
   });
 
   socket.on("pause-video", (roomCode) => {
     io.in(roomCode).emit("pause-video");
 
-    console.log("pausing video");
+    console.log("pausing video on", roomCode);
   });
 
   socket.on("seek-to", (data) => {

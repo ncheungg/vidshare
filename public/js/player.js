@@ -22,13 +22,32 @@ function getUrlParameters() {
 const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
 // const socket = io.connect("http://localhost:5000/");
 
-// gets data from url and sends to socket.io server
+// gets roomcode from url and sends to socket.io server
 getUrlParameters();
 socket.on("connect", () => {
   socket.emit("join-room", roomCode);
 });
 // -------------------- connect to websocket --------------------
 
+// -------------------- DOM elements --------------------
+const roomCodeDisplay = document.getElementById("room-code");
+const playerOverlay = document.getElementById("player-overlay-img");
+const playPauseButton = document.getElementById("play-pause-button");
+const skipBackward = document.getElementById("skip-backward");
+const skipForward = document.getElementById("skip-forward");
+const fullscreenButton = document.getElementById("fullscreen");
+const videoScrubberBox = document.getElementById("video-progress-bar");
+const videoInputBox = document.getElementById("video-link");
+const submitButton = document.getElementById("submit-video-link");
+const userPanel = document.getElementById("display-connected-users");
+const volumeButton = document.getElementById("volume-button");
+const volumeSlider = document.getElementById("volume-slider");
+const volumeSliderBar = document
+  .getElementById("volume-slider")
+  .getElementsByTagName("div")[0];
+// -------------------- DOM elements --------------------
+
+// -------------------- websocket functions & code --------------------
 // -------------------- listen for socket events --------------------
 socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
@@ -78,7 +97,6 @@ function sendOutPlayerData() {
 function addUserToList() {
   const img = document.createElement("img");
   img.src = "img/profilepic.png";
-
   userPanel.appendChild(img);
 }
 
@@ -111,25 +129,7 @@ function pauseVideo() {
 }
 // -------------------- helper functions for socket events --------------------
 
-// -------------------- DOM elements --------------------
-const roomCodeDisplay = document.getElementById("room-code");
-const playerOverlay = document.getElementById("player-overlay-img");
-const playPauseButton = document.getElementById("play-pause-button");
-const skipBackward = document.getElementById("skip-backward");
-const skipForward = document.getElementById("skip-forward");
-const fullscreenButton = document.getElementById("fullscreen");
-const videoScrubberBox = document.getElementById("video-progress-bar");
-const videoInputBox = document.getElementById("video-link");
-const submitButton = document.getElementById("submit-video-link");
-const userPanel = document.getElementById("display-connected-users");
-const volumeButton = document.getElementById("volume-button");
-const volumeSlider = document.getElementById("volume-slider");
-const volumeSliderBar = document
-  .getElementById("volume-slider")
-  .getElementsByTagName("div")[0];
-// -------------------- DOM elements --------------------
-
-// -------------------- emit on DOM event --------------------
+// -------------------- listeners that trigger socket events --------------------
 playerOverlay.addEventListener("click", playPauseToggle);
 
 playPauseButton.addEventListener("click", playPauseToggle);
@@ -164,7 +164,8 @@ videoScrubberBox.addEventListener("click", () => {
 
   socket.emit("seek-to", { roomCode, time });
 });
-// -------------------- emit on DOM event --------------------
+// -------------------- listeners that trigger socket events --------------------
+// -------------------- websocket functions & code --------------------
 
 // -------------------- youtube player api code --------------------
 // 2. This code loads the IFrame Player API code asynchronously.
@@ -226,6 +227,7 @@ function onPlayerReady(event) {
 // }
 // -------------------- youtube player api code --------------------
 
+// -------------------- client side functions --------------------
 // -------------------- helper functions --------------------
 // parses link into videoId
 function parseVideoLink(link) {
@@ -304,13 +306,13 @@ function toggleFullscreen() {
 }
 // -------------------- helper functions --------------------
 
-// -------------------- event listener functions --------------------
+// -------------------- event listener --------------------
 volumeButton.addEventListener("click", toggleVolumeSlider);
 
 volumeSlider.addEventListener("click", changeVolume);
 
 fullscreenButton.addEventListener("click", toggleFullscreen);
-// -------------------- event listener functions --------------------
+// -------------------- event listener --------------------
 
 // -------------------- other functions --------------------
 // loop to get scrubber
@@ -323,3 +325,4 @@ function getScrubberLength() {
 }
 window.setInterval(getScrubberLength, 100);
 // -------------------- other functions --------------------
+// -------------------- client side functions --------------------
