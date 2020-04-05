@@ -6,7 +6,7 @@ let iframeDiv;
 
 // -------------------- websocket --------------------
 const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect();
+// const socket = io.connect("http://localhost:5000/");
 // -------------------- websocket --------------------
 
 // -------------------- DOM elements --------------------
@@ -43,17 +43,13 @@ skipForward.addEventListener("click", () => {
 videoLinkAddressBox.addEventListener("keydown", (key) => {
   if (key.keyCode == 13) {
     const vId = parseVideoLink(videoLinkAddressBox.value);
-    socket.emit("load-new-video", {
-      videoId: vId,
-    });
+    socket.emit("load-new-video", vId);
   }
 });
 
 submitButton.addEventListener("click", () => {
   const vId = parseVideoLink(videoLinkAddressBox.value);
-  socket.emit("load-new-video", {
-    videoId: vId,
-  });
+  socket.emit("load-new-video", vId);
 });
 
 videoScrubberBox.addEventListener("click", () => {
@@ -92,7 +88,7 @@ socket.on("update-user-list", (data) => {
 });
 
 socket.on("load-new-video", (data) => {
-  player.loadVideoById(data);
+  player.loadVideoById({ videoId: data });
 });
 // -------------------- listen for socket events --------------------
 

@@ -4,7 +4,7 @@ const socket = require("socket.io");
 function createExpressApp(port) {
   // app setup
   const app = express();
-  const server = app.listen(port || process.env.PORT, () =>
+  const server = app.listen(process.env.PORT || port, () =>
     console.log("running server on port", port)
   );
 
@@ -74,10 +74,6 @@ function createExpressApp(port) {
 
       console.log("loading new video with ID", data);
     });
-  });
-
-  io.on("disconnect", function (socket) {
-    console.log("bye bye");
   });
 }
 
