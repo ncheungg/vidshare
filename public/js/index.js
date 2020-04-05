@@ -18,7 +18,6 @@ function changeActiveNavTab(first, second) {
   navTabs[1].className = "nav-link " + second;
 }
 
-// changes HTML to support "create room" tab
 function changeToCreateRoomTab() {
   changeActiveNavTab("disabled", "active");
 
@@ -36,14 +35,13 @@ function changeToCreateRoomTab() {
   cardParagraph.innerHTML = "Create a room to watch videos with your friends";
 }
 
-// changes HTML to support "join room" tab
 function changeToJoinRoomTab() {
   changeActiveNavTab("active", "disabled");
 
   // removes existing create room button
   cardBody.removeChild(cardBody.getElementsByTagName("a")[0]);
 
-  // adds form to submit room code
+  // ----- adds form to submit room code -----
   const formDiv = document.createElement("div");
   formDiv.className = "input-group mb-3";
 
@@ -67,6 +65,7 @@ function changeToJoinRoomTab() {
   formDiv.appendChild(form);
   formDiv.appendChild(buttonDiv);
   cardBody.appendChild(formDiv);
+  // ----- adds form to submit room code -----
 
   cardParagraph.innerHTML =
     "Join an existing room with your friend's room code";

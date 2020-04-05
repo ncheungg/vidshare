@@ -1,17 +1,18 @@
+// -------------------- app setup --------------------
 const express = require("express");
 const socket = require("socket.io");
 
-// app setup
 const app = express();
 const server = app.listen(process.env.PORT || 5000, () =>
   console.log("started server")
 );
 
-// static files
+// define static files
 app.use(express.static("public"));
 
-// helper functions
-// joins socket to room
+// -------------------- app setup --------------------
+
+// -------------------- helper functions --------------------
 function joinSocketToRoom(socket, roomCode) {
   socket.join(roomCode);
   updateUserLengths(roomCode);
@@ -36,31 +37,29 @@ function checkIfRoomExists(roomCode) {
   const roomCodes = Object.keys(io.sockets.adapter.rooms);
   return roomCodes.includes(roomCode);
 }
+// -------------------- helper functions --------------------
 
-// socket setup
+// -------------------- socket setup/listening functions --------------------
 const io = socket(server);
 io.on("connection", function (socket) {
-  // on connection runs this code
   console.log("connected with socket", socket.id);
 
-  // index.html socket functions
+  // -------------------- index.html socket functions --------------------
   socket.on("create-room", (fn) => {
     let roomCode = makeRoomCode(4);
     while (checkIfRoomExists(roomCode)) {
       roomCode = makeRoomCode(4);
     }
 
-    // runs passed in function
     fn(roomCode);
   });
 
-  // sends back if room exists
   socket.on("check-room", (roomCode, fn) => {
     fn(checkIfRoomExists(roomCode.toString()));
   });
+  // -------------------- index.html socket functions --------------------
 
-  // player.html functions
-  // joins room
+  // -------------------- player.html socket functions --------------------
   socket.on("join-room", (roomCode) => {
     joinSocketToRoom(socket, roomCode);
   });
@@ -81,13 +80,13 @@ io.on("connection", function (socket) {
       // gets video data from socket
       io.sockets.to(firstSocket).emit("get-player-data", socket.id);
     } else {
-      // sends out preset video data
+      // sends out default video data
       const data = { vId: "WFcjKjTq178", time: 0, playerState: 1 };
       io.sockets.to(socket.id).emit("receive-player-data", data);
     }
   });
 
-  // sends out player data
+  // sends out player data (runs with "get-player-data")
   socket.on("receive-player-data", (data) => {
     io.sockets.to(data.id).emit("receive-player-data", data);
   });
@@ -123,4 +122,6 @@ io.on("connection", function (socket) {
 
     console.log("loading new video with ID", data.vId, "on", data.roomCode);
   });
+  // -------------------- player.html socket functions --------------------
 });
+// -------------------- socket setup/listening functions --------------------
