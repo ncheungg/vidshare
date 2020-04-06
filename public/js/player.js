@@ -39,6 +39,7 @@ const fullscreenButton = document.getElementById("fullscreen");
 const videoScrubberBox = document.getElementById("video-progress-bar");
 const videoInputBox = document.getElementById("video-link");
 const submitButton = document.getElementById("submit-video-link");
+const videoTitle = document.getElementById("video-title");
 const userPanel = document.getElementById("display-connected-users");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
@@ -196,7 +197,7 @@ function onYouTubeIframeAPIReady() {
 
           iframeDiv = document.getElementById("outer-player-div");
         },
-        // onStateChange: onPlayerStateChange
+        onStateChange: onPlayerStateChange,
       },
       playerVars: {
         controls: 0,
@@ -218,13 +219,13 @@ function onPlayerReady(event) {
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
 
-// let done = false;
-// function onPlayerStateChange(event) {
-//   if (event.data == YT.PlayerState.PLAYING && !done) {
-//     setTimeout(stopVideo, 6000);
-//     done = true;
-//   }
-// }
+function onPlayerStateChange(event) {
+  // sets title on video change
+  const title = event.target.getVideoData().title;
+  if (title != "" && title != undefined) {
+    videoTitle.innerHTML = title;
+  }
+}
 // -------------------- youtube player api code --------------------
 
 // -------------------- client side functions --------------------
