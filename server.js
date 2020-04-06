@@ -68,7 +68,7 @@ io.on("connection", function (socket) {
   });
 
   socket.on("get-player-data", (roomCode) => {
-    const rooms = io.sockets.adapter.rooms;
+    const rooms = io.sockets.adapter.rooms[roomCode];
 
     if (rooms.length > 1) {
       // gets socket that is not itself
