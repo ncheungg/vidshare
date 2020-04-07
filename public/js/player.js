@@ -156,11 +156,19 @@ function loadNextVideo() {
 
 function validateAndQueueVideo() {
   // parses link into vId
-  const vId = videoInputBox.value.split("=")[1].split("&")[0];
+  const val = videoInputBox.value; //.split("=")[1].split("&")[0];
+  videoInputBox.value = "";
 
-  // checks if vId is valid
-  if (vId.length > 10) {
-    socket.emit("queue-new-video", { roomCode, vId });
+  if (val.includes("=") && val.includes("youtube.com")) {
+    const vId = val.split("=")[1].split("&")[0];
+    if (vId.length > 10) {
+      socket.emit("queue-new-video", { roomCode, vId });
+      videoInputBox.className = "form-control";
+    } else {
+      videoInputBox.className = "form-control is-invalid";
+    }
+  } else {
+    videoInputBox.className = "form-control is-invalid";
   }
 }
 // -------------------- helper functions for socket events --------------------
@@ -253,7 +261,7 @@ function onPlayerStateChange(event) {
     videoTitle.innerHTML = title;
   }
 
-  if (event.data == 0) {
+  if (event.data == 0 && videoQueue.length > 0) {
     setTimeout(() => {
       socket.emit("next-video", roomCode);
     }, 1000);
