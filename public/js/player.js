@@ -231,6 +231,7 @@ function onYouTubeIframeAPIReady() {
           }
 
           videoQueue = data.videoQueue;
+          updateVideoQueueList();
         },
         onStateChange: onPlayerStateChange,
       },
