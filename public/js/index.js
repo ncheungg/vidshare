@@ -61,9 +61,14 @@ function changeToJoinRoomTab() {
   button.setAttribute("onclick", "joinRoom()");
   button.innerHTML = "Join Room";
 
+  const invalidDiv = document.createElement("div");
+  invalidDiv.className = "invalid-feedback";
+  invalidDiv.innerHTML = "Please enter a valid youtube video link";
+
   buttonDiv.appendChild(button);
   formDiv.appendChild(form);
   formDiv.appendChild(buttonDiv);
+  formDiv.appendChild(invalidDiv);
   cardBody.appendChild(formDiv);
   // ----- adds form to submit room code -----
 
@@ -81,7 +86,7 @@ function joinRoom() {
   const form = document.getElementById("room-code-input");
   socket.emit("check-room", form.value, (roomExists) => {
     if (roomExists) {
-      location.href = "player.html?joinRoom=" + form.value;
+      location.href = `player.html?joinRoom=${form.value}`;
     } else {
       // displays invalid form
       form.className = "form-control is-invalid";
