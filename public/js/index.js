@@ -14,8 +14,8 @@ const cardParagraph = cardBody.getElementsByTagName("p")[0];
 // -------------------- helper functions --------------------
 // toggles active and inactive tabs
 function changeActiveNavTab(first, second) {
-  navTabs[0].className = "nav-link " + first;
-  navTabs[1].className = "nav-link " + second;
+  navTabs[0].className = `nav-link ${first}`;
+  navTabs[1].className = `nav-link ${second}`;
 }
 
 function changeToCreateRoomTab() {
@@ -78,7 +78,7 @@ function changeToJoinRoomTab() {
 
 function createRoom() {
   socket.emit("create-room", (roomCode) => {
-    location.href = "player.html?joinRoom=" + roomCode;
+    location.href = `player.html?joinRoom=${roomCode}`;
   });
 }
 

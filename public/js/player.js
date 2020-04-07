@@ -272,14 +272,14 @@ function onPlayerStateChange(event) {
 // -------------------- helper functions --------------------
 // parses float into scrubber css string
 function updateScrubberLength(fraction) {
-  const s = "width: " + (100 * fraction).toString() + "%";
+  const s = `width: ${(100 * fraction).toString()}%`;
   document
     .getElementById("video-watched-progress-bar")
     .setAttribute("style", s);
 }
 
 function updateVolumeBarLength(fraction) {
-  const s = "height: " + (100 * fraction).toString() + "%";
+  const s = `height: ${(100 * fraction).toString()}%`;
   volumeSliderBar.setAttribute("style", s);
 }
 
@@ -292,7 +292,7 @@ function showVolumeSlider() {
   volumeSliderBar.setAttribute("aria-valuemax", "100");
 
   const v = player.getVolume();
-  volumeSliderBar.setAttribute("style", "height: " + v.toString() + "%;");
+  volumeSliderBar.setAttribute("style", `height: ${v.toString()}%`);
 }
 
 function hideVolumeSlider() {
