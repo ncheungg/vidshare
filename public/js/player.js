@@ -252,6 +252,12 @@ function onPlayerStateChange(event) {
   if (title != "" && title != undefined) {
     videoTitle.innerHTML = title;
   }
+
+  if (event.data == 0) {
+    setTimeout(() => {
+      socket.emit("next-video", roomCode);
+    }, 1000);
+  }
 }
 // -------------------- youtube player api code --------------------
 
