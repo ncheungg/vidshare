@@ -83,8 +83,12 @@ io.on("connection", function (socket) {
       io.sockets.to(firstSocket).emit("get-player-data", socket.id);
     } else {
       // sends out default video data
-      const data = { vId: "WFcjKjTq178", time: 0, playerState: 1 };
-      io.sockets.to(socket.id).emit("receive-player-data", data);
+      io.sockets.to(socket.id).emit("receive-player-data", {
+        vId: "WFcjKjTq178",
+        time: 0,
+        playerState: 1,
+        videoQueue: [],
+      });
     }
   });
 
@@ -121,10 +125,16 @@ io.on("connection", function (socket) {
     console.log("seeking to", data.time, "on", data.roomCode);
   });
 
-  socket.on("load-new-video", (data) => {
-    io.in(data.roomCode).emit("load-new-video", data.vId);
+  socket.on("queue-new-video", (data) => {
+    io.in(data.roomCode).emit("queue-new-video", data.vId);
 
-    console.log("loading new video with ID", data.vId, "on", data.roomCode);
+    console.log("queueing new video with ID", data.vId, "on", data.roomCode);
+  });
+
+  socket.on("next-video", (roomCode) => {
+    io.in(roomCode).emit("next-video");
+
+    console.log("skipping to next video on", roomCode);
   });
   // -------------------- player.html socket functions --------------------
 });

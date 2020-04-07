@@ -18,14 +18,26 @@
   z-index: 1;
 }
 
+#queued-video-panel {
+  background-color: #eeeeee;
+  margin-left: -1%;
+  margin-right: 1%;
+}
+
 #connected-user-panel {
   background-color: #eeeeee;
   margin-left: 1%;
 }
 
-#connected-user-panel h6 {
+#connected-user-panel h6,
+#queued-video-panel h6 {
   margin-top: 10px;
   text-align: center;
+}
+
+#display-queued-videos img {
+  width: 100%;
+  padding: 5%;
 }
 
 #room-code {

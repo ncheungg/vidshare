@@ -1,8 +1,8 @@
 // -------------------- variables --------------------
 let i;
 let player;
-let iframeDiv;
 let roomCode;
+let videoQueue;
 // -------------------- variables --------------------
 
 // -------------------- parse URL parameters --------------------
@@ -33,14 +33,15 @@ socket.on("connect", () => {
 const roomCodeDisplay = document.getElementById("room-code");
 const playerOverlay = document.getElementById("player-overlay-img");
 const playPauseButton = document.getElementById("play-pause-button");
-const skipBackward = document.getElementById("skip-backward");
 const skipForward = document.getElementById("skip-forward");
 const fullscreenButton = document.getElementById("fullscreen");
 const videoScrubberBox = document.getElementById("video-progress-bar");
 const videoInputBox = document.getElementById("video-link");
-const submitButton = document.getElementById("submit-video-link");
+const queueButton = document.getElementById("submit-video-link");
 const videoTitle = document.getElementById("video-title");
+const iframeDiv = document.getElementById("outer-player-div");
 const userPanel = document.getElementById("display-connected-users");
+const videoQueuePanel = document.getElementById("display-queued-videos");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeSliderBar = document
@@ -52,6 +53,7 @@ const volumeSliderBar = document
 // -------------------- listen for socket events --------------------
 socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
+socket.on("next-video", loadNextVideo);
 
 socket.on("update-user-count", (data) => {
   const difference = data - userPanel.childElementCount;
@@ -72,8 +74,9 @@ socket.on("seek-to", (data) => {
   player.seekTo(data);
 });
 
-socket.on("load-new-video", (data) => {
-  player.loadVideoById({ videoId: data });
+socket.on("queue-new-video", (data) => {
+  videoQueue.push(data);
+  updateVideoQueueList();
 });
 
 socket.on("get-player-data", (id) => {
@@ -81,12 +84,31 @@ socket.on("get-player-data", (id) => {
   const playerState = player.getPlayerState();
   const time = player.getCurrentTime();
 
-  socket.emit("receive-player-data", { vId, playerState, time, id });
+  socket.emit("receive-player-data", {
+    vId,
+    playerState,
+    time,
+    id,
+    videoQueue,
+  });
 });
 // -------------------- listen for socket events --------------------
 
 // -------------------- helper functions for socket events --------------------
-// sends out player data
+function updateVideoQueueList() {
+  //removes old imgs
+  while (videoQueuePanel.lastElementChild) {
+    videoQueuePanel.removeChild(videoQueuePanel.lastElementChild);
+  }
+
+  // adds new imgs
+  for (i = 0; i < videoQueue.length; i++) {
+    const img = document.createElement("img");
+    img.src = `https://img.youtube.com/vi/${videoQueue[i]}/mqdefault.jpg`;
+    videoQueuePanel.appendChild(img);
+  }
+}
+
 function sendOutPlayerData() {
   const vId = player.getVideoUrl().split("=")[1];
   const playerState = player.getPlayerState();
@@ -94,14 +116,13 @@ function sendOutPlayerData() {
 
   socket.emit("receive-player-data", { vId, time, playerState });
 }
-// adds user to user list
+
 function addUserToList() {
   const img = document.createElement("img");
   img.src = "img/profilepic.png";
   userPanel.appendChild(img);
 }
 
-// removes user from user list
 function removeUserFromList() {
   if (userPanel.lastElementChild) {
     userPanel.removeChild(userPanel.lastElementChild);
@@ -117,16 +138,30 @@ function playPauseToggle() {
   }
 }
 
-// play video
 function playVideo() {
   player.playVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
 }
 
-// pause video
 function pauseVideo() {
   player.pauseVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
+}
+
+function loadNextVideo() {
+  const videoId = videoQueue.shift();
+  player.loadVideoById({ videoId });
+  updateVideoQueueList();
+}
+
+function validateAndQueueVideo() {
+  // parses link into vId
+  const vId = videoInputBox.value.split("=")[1].split("&")[0];
+
+  // checks if vId is valid
+  if (vId.length > 10) {
+    socket.emit("queue-new-video", { roomCode, vId });
+  }
 }
 // -------------------- helper functions for socket events --------------------
 
@@ -135,27 +170,19 @@ playerOverlay.addEventListener("click", playPauseToggle);
 
 playPauseButton.addEventListener("click", playPauseToggle);
 
-skipBackward.addEventListener("click", () => {
-  const time = player.getCurrentTime() - 5;
-  socket.emit("seek-to", { roomCode, time });
-});
-
 skipForward.addEventListener("click", () => {
-  const time = player.getCurrentTime() + 5;
-  socket.emit("seek-to", { roomCode, time });
+  if (videoQueue.length > 0) {
+    socket.emit("next-video", roomCode);
+  }
 });
 
 videoInputBox.addEventListener("keydown", (key) => {
   if (key.keyCode == 13) {
-    const vId = parseVideoLink(videoInputBox.value);
-    socket.emit("load-new-video", { roomCode, vId });
+    validateAndQueueVideo();
   }
 });
 
-submitButton.addEventListener("click", () => {
-  const vId = parseVideoLink(videoInputBox.value);
-  socket.emit("load-new-video", { roomCode, vId });
-});
+queueButton.addEventListener("click", validateAndQueueVideo);
 
 videoScrubberBox.addEventListener("click", () => {
   const rect = videoScrubberBox.getBoundingClientRect();
@@ -195,7 +222,7 @@ function onYouTubeIframeAPIReady() {
             player.playVideo();
           }
 
-          iframeDiv = document.getElementById("outer-player-div");
+          videoQueue = data.videoQueue;
         },
         onStateChange: onPlayerStateChange,
       },
@@ -230,11 +257,6 @@ function onPlayerStateChange(event) {
 
 // -------------------- client side functions --------------------
 // -------------------- helper functions --------------------
-// parses link into videoId
-function parseVideoLink(link) {
-  return link.split("=")[1].split("&")[0];
-}
-
 // parses float into scrubber css string
 function updateScrubberLength(fraction) {
   const s = "width: " + (100 * fraction).toString() + "%";
