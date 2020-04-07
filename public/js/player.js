@@ -262,7 +262,7 @@ function onPlayerStateChange(event) {
   }
 
   if (event.data == 0 && videoQueue.length > 0) {
-    socket.emit("next-video", roomCode);
+    loadNextVideo();
   }
 }
 // -------------------- youtube player api code --------------------
