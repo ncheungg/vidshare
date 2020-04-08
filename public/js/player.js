@@ -178,6 +178,12 @@ playerOverlay.addEventListener("click", playPauseToggle);
 
 playPauseButton.addEventListener("click", playPauseToggle);
 
+document.addEventListener("keyup", (key) => {
+  if (key.keyCode == 32) {
+    playPauseToggle();
+  }
+});
+
 skipForward.addEventListener("click", () => {
   if (videoQueue.length > 0) {
     socket.emit("next-video", roomCode);
@@ -247,9 +253,9 @@ function onYouTubeIframeAPIReady() {
 }
 
 // 4. The API will call this function when the video player is ready.
-function onPlayerReady(event) {
-  event.target.playVideo();
-}
+// function onPlayerReady(event) {
+//   event.target.playVideo();
+// }
 
 // 5. The API calls this function when the player's state changes.
 //    The function indicates that when playing a video (state=1),
@@ -343,6 +349,13 @@ function toggleFullscreen() {
 // -------------------- helper functions --------------------
 
 // -------------------- event listener --------------------
+// unfocuses button after pressed
+document.querySelectorAll("button").forEach(function (item) {
+  item.addEventListener("focus", function () {
+    this.blur();
+  });
+});
+
 volumeButton.addEventListener("click", toggleVolumeSlider);
 
 volumeSlider.addEventListener("click", changeVolume);
