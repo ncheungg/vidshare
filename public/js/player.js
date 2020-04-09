@@ -191,12 +191,22 @@ function queueVideo() {
     videoInputBox.className = "form-control is-invalid";
   }
 }
+
+function scrubberSeekVideo() {
+  const rect = videoScrubberBox.getBoundingClientRect();
+  const x = event.clientX;
+  const fraction = (x - rect.left) / (rect.right - rect.left);
+  const time = fraction * player.getDuration();
+
+  socket.emit("seek-to", { roomCode, time });
+}
 // -------------------- helper functions for socket events --------------------
 
 // -------------------- listeners that trigger socket events --------------------
 playerOverlay.addEventListener("click", playPauseToggle);
-
 playPauseButton.addEventListener("click", playPauseToggle);
+queueButton.addEventListener("click", queueVideo);
+videoScrubberBox.addEventListener("click", scrubberSeekVideo);
 
 document.addEventListener("keyup", (key) => {
   if (key.keyCode == 32) {
@@ -214,17 +224,6 @@ videoInputBox.addEventListener("keydown", (key) => {
   if (key.keyCode == 13) {
     queueVideo();
   }
-});
-
-queueButton.addEventListener("click", queueVideo);
-
-videoScrubberBox.addEventListener("click", () => {
-  const rect = videoScrubberBox.getBoundingClientRect();
-  const x = event.clientX;
-  const fraction = (x - rect.left) / (rect.right - rect.left);
-  const time = fraction * player.getDuration();
-
-  socket.emit("seek-to", { roomCode, time });
 });
 // -------------------- listeners that trigger socket events --------------------
 // -------------------- websocket functions & code --------------------
