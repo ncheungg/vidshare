@@ -171,19 +171,22 @@ function skipVideo(vId) {
   socket.emit("skip-video", { roomCode, vId });
 }
 
-function validateAndQueueVideo() {
-  // parses link into vId
-  const val = videoInputBox.value; //.split("=")[1].split("&")[0];
-  videoInputBox.value = "";
+function parseVideoLinkIntoId(url) {
+  if (url.includes("youtu.be") || url.inclues("youtube.com/embed/")) {
+    return url.split("/").slice(-1)[0].split("?")[0];
+  } else if (url.includes("youtube.com")) {
+    return url.split("=")[1].split("&")[0];
+  } else {
+    return false;
+  }
+}
 
-  if (val.includes("=") && val.includes("youtube.com")) {
-    const vId = val.split("=")[1].split("&")[0];
-    if (vId.length > 10) {
-      socket.emit("queue-new-video", { roomCode, vId });
-      videoInputBox.className = "form-control";
-    } else {
-      videoInputBox.className = "form-control is-invalid";
-    }
+function queueVideo() {
+  const vId = parseVideoLinkIntoId(videoInputBox.value);
+
+  if (vId.length > 10) {
+    socket.emit("queue-new-video", { roomCode, vId });
+    videoInputBox.className = "form-control";
   } else {
     videoInputBox.className = "form-control is-invalid";
   }
@@ -209,11 +212,11 @@ skipForward.addEventListener("click", () => {
 
 videoInputBox.addEventListener("keydown", (key) => {
   if (key.keyCode == 13) {
-    validateAndQueueVideo();
+    queueVideo();
   }
 });
 
-queueButton.addEventListener("click", validateAndQueueVideo);
+queueButton.addEventListener("click", queueVideo);
 
 videoScrubberBox.addEventListener("click", () => {
   const rect = videoScrubberBox.getBoundingClientRect();
