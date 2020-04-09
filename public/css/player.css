@@ -41,6 +41,9 @@
   width: 100%;
   padding: 5%;
 }
+#display-queued-videos img:hover {
+  background-color: #aaaaaa;
+}
 
 #room-code {
   font-size: 14px;

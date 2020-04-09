@@ -55,7 +55,37 @@ socket.on("play-video", playVideo);
 socket.on("pause-video", pauseVideo);
 socket.on("next-video", loadNextVideo);
 
-socket.on("update-user-count", (data) => {
+socket.on("skip-video", (vId) => skipToVideoById(vId));
+socket.on("update-user-count", (data) => updateUserCount(data));
+socket.on("get-player-data", (id) => getPlayerData(id));
+
+socket.on("seek-to", (data) => {
+  player.seekTo(data);
+});
+
+socket.on("queue-new-video", (data) => {
+  videoQueue.push(data);
+  updateVideoQueueList();
+});
+
+// -------------------- listen for socket events --------------------
+
+// -------------------- helper functions for socket events --------------------
+function getPlayerData(id) {
+  const vId = player.getVideoUrl().split("=")[1];
+  const playerState = player.getPlayerState();
+  const time = player.getCurrentTime();
+
+  socket.emit("receive-player-data", {
+    vId,
+    playerState,
+    time,
+    id,
+    videoQueue,
+  });
+}
+
+function updateUserCount(data) {
   const difference = data - userPanel.childElementCount;
 
   // adds or removes profilepic.png elements
@@ -68,33 +98,8 @@ socket.on("update-user-count", (data) => {
       removeUserFromList();
     }
   }
-});
+}
 
-socket.on("seek-to", (data) => {
-  player.seekTo(data);
-});
-
-socket.on("queue-new-video", (data) => {
-  videoQueue.push(data);
-  updateVideoQueueList();
-});
-
-socket.on("get-player-data", (id) => {
-  const vId = player.getVideoUrl().split("=")[1];
-  const playerState = player.getPlayerState();
-  const time = player.getCurrentTime();
-
-  socket.emit("receive-player-data", {
-    vId,
-    playerState,
-    time,
-    id,
-    videoQueue,
-  });
-});
-// -------------------- listen for socket events --------------------
-
-// -------------------- helper functions for socket events --------------------
 function updateVideoQueueList() {
   //removes old imgs
   while (videoQueuePanel.lastElementChild) {
@@ -105,6 +110,7 @@ function updateVideoQueueList() {
   for (i = 0; i < videoQueue.length; i++) {
     const img = document.createElement("img");
     img.src = `https://img.youtube.com/vi/${videoQueue[i]}/mqdefault.jpg`;
+    img.setAttribute("onclick", `skipVideo("${videoQueue[i]}")`);
     videoQueuePanel.appendChild(img);
   }
 }
@@ -152,6 +158,17 @@ function loadNextVideo() {
   const videoId = videoQueue.shift();
   player.loadVideoById({ videoId });
   updateVideoQueueList();
+}
+
+function skipToVideoById(vId) {
+  while (videoQueue[0] != vId) {
+    videoQueue.shift();
+  }
+  loadNextVideo();
+}
+
+function skipVideo(vId) {
+  socket.emit("skip-video", { roomCode, vId });
 }
 
 function validateAndQueueVideo() {

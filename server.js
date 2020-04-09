@@ -135,6 +135,12 @@ io.on("connection", function (socket) {
 
     console.log("skipping to next video on", roomCode);
   });
+
+  socket.on("skip-video", (data) => {
+    io.in(data.roomCode).emit("skip-video", data.vId);
+
+    console.log(`skipping to vId ${data.vId} on ${data.roomCode}`);
+  });
   // -------------------- player.html socket functions --------------------
 });
 // -------------------- socket setup/listening functions --------------------
