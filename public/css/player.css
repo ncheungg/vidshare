@@ -56,6 +56,11 @@
   margin: 5%;
 }
 
+#video-title {
+  font-size: x-large;
+  font-weight: bold;
+}
+
 #video-progress-bar {
   /* add 11px to top margin from .col-auto */
   margin: 21px 10px 10px 10px;
@@ -64,7 +69,6 @@
 #volume-slider {
   margin-top: 5px;
   margin-left: 20px;
-  /* margin-right: -10px; */
 }
 
 /* vertical progress volume bar */
