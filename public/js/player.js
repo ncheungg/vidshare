@@ -19,8 +19,8 @@ function getUrlParameters() {
 // -------------------- parse URL parameters --------------------
 
 // -------------------- connect to websocket --------------------
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("http://localhost:5000/");
+// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+const socket = io.connect("http://localhost:5000/");
 
 // gets roomcode from url and sends to socket.io server
 getUrlParameters();

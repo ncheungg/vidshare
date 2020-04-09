@@ -71,7 +71,7 @@
         <div class="col-sm-1" id="queued-video-panel">
           <h6>Queued Videos</h6>
 
-          <div class="flex-colum" id="display-queued-videos"></div>
+          <div class="flex-column" id="display-queued-videos"></div>
         </div>
 
         <div class="col-lg-8">
@@ -93,10 +93,19 @@
       </div>
 
       <div class="row">
-        <div class="col-lg-2"></div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-1" style="margin: 0.5% 1% 0 -1%;">
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            id="skip-forward"
+          >
+            Next Video
+          </button>
+        </div>
 
         <div class="col-lg-8">
-          <h5 id="video-title"></h5>
+          <h4 id="video-title"></h4>
         </div>
       </div>
 
@@ -113,17 +122,6 @@
                 title="Play / Pause"
               >
                 <i class="fa fa-pause-circle"></i>
-              </button>
-            </div>
-
-            <div class="col-auto">
-              <button
-                class="btn btn-light"
-                type="button"
-                id="skip-forward"
-                title="Next Song"
-              >
-                <i class="fa fa-step-forward"></i>
               </button>
             </div>
 

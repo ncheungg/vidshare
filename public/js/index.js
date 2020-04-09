@@ -1,6 +1,6 @@
 // -------------------- websocket --------------------
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("http://localhost:5000/");
+// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+const socket = io.connect("http://localhost:5000/");
 // -------------------- websocket --------------------
 
 // -------------------- DOM elements --------------------
@@ -19,7 +19,7 @@ function changeActiveNavTab(first, second) {
 }
 
 function changeToCreateRoomTab() {
-  changeActiveNavTab("disabled", "active");
+  changeActiveNavTab("", "active");
 
   // removes existing join room form
   cardBody.removeChild(cardBody.getElementsByClassName("input-group")[0]);
@@ -36,7 +36,7 @@ function changeToCreateRoomTab() {
 }
 
 function changeToJoinRoomTab() {
-  changeActiveNavTab("active", "disabled");
+  changeActiveNavTab("active", "");
 
   // removes existing create room button
   cardBody.removeChild(cardBody.getElementsByTagName("a")[0]);
@@ -84,9 +84,9 @@ function createRoom() {
 
 function joinRoom() {
   const form = document.getElementById("room-code-input");
-  socket.emit("check-room", form.value, (roomExists) => {
+  socket.emit("check-room", form.value.toLowerCase(), (roomExists) => {
     if (roomExists) {
-      location.href = `player.html?joinRoom=${form.value}`;
+      location.href = `player.html?joinRoom=${form.value.toLowerCase()}`;
     } else {
       // displays invalid form
       form.className = "form-control is-invalid";
@@ -95,7 +95,7 @@ function joinRoom() {
 }
 // -------------------- helper functions --------------------
 
-// -------------------- on click functions --------------------
+// -------------------- event listeners --------------------
 createRoomTab.addEventListener("click", changeToCreateRoomTab);
 joinRoomTab.addEventListener("click", changeToJoinRoomTab);
-// -------------------- on click functions --------------------
+// -------------------- event listeners --------------------

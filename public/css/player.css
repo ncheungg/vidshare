@@ -7,7 +7,7 @@
 }
 
 .col-auto {
-  margin: 10px;
+  margin: 5px;
 }
 
 #player-overlay-img {
@@ -22,11 +22,13 @@
   background-color: #eeeeee;
   margin-left: -1%;
   margin-right: 1%;
+  padding: 3px;
 }
 
 #connected-user-panel {
   background-color: #eeeeee;
   margin-left: 1%;
+  padding: 3px;
 }
 
 #connected-user-panel h6,
@@ -58,8 +60,8 @@
 
 #volume-slider {
   margin-top: 5px;
-  margin-left: 10px;
-  margin-right: -10px;
+  margin-left: 20px;
+  /* margin-right: -10px; */
 }
 
 /* vertical progress volume bar */
