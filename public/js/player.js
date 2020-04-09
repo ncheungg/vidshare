@@ -168,7 +168,9 @@ function skipToVideoById(vId) {
 }
 
 function skipVideo(vId) {
-  socket.emit("skip-video", { roomCode, vId });
+  if (videoQueue.includes(vId)) {
+    socket.emit("skip-video", { roomCode, vId });
+  }
 }
 
 function parseVideoLinkIntoId(url) {
