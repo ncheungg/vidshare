@@ -174,7 +174,7 @@ function skipVideo(vId) {
 }
 
 function parseVideoLinkIntoId(url) {
-  if (url.includes("youtu.be") || url.inclues("youtube.com/embed/")) {
+  if (url.includes("youtu.be") || url.includes("youtube.com/embed/")) {
     return url.split("/").slice(-1)[0].split("?")[0];
   } else if (url.includes("youtube.com")) {
     return url.split("=")[1].split("&")[0];
