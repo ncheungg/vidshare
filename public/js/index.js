@@ -49,7 +49,7 @@ function changeToJoinRoomTab() {
   form.className = "form-control";
   form.id = "room-code-input";
   form.setAttribute("type", "search");
-  form.setAttribute("placeholder", "YFc8");
+  form.setAttribute("placeholder", "YFC8");
   form.setAttribute("onsearch", "joinRoom()");
 
   const buttonDiv = document.createElement("div");
