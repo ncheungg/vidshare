@@ -41,7 +41,7 @@ const queueButton = document.getElementById("submit-video-link");
 const videoTitle = document.getElementById("video-title");
 const iframeDiv = document.getElementById("outer-player-div");
 const userPanel = document.getElementById("display-connected-users");
-const videoQueuePanel = document.getElementById("display-queued-videos");
+const queuePanel = document.getElementById("display-queued-videos");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
 const volumeSliderBar = document
@@ -102,8 +102,8 @@ function updateUserCount(data) {
 
 function updateVideoQueueList() {
   //removes old imgs
-  while (videoQueuePanel.lastElementChild) {
-    videoQueuePanel.removeChild(videoQueuePanel.lastElementChild);
+  while (queuePanel.lastElementChild) {
+    queuePanel.removeChild(queuePanel.lastElementChild);
   }
 
   // adds new imgs
@@ -111,7 +111,7 @@ function updateVideoQueueList() {
     const img = document.createElement("img");
     img.src = `https://img.youtube.com/vi/${videoQueue[i]}/mqdefault.jpg`;
     img.setAttribute("onclick", `skipVideo("${videoQueue[i]}")`);
-    videoQueuePanel.appendChild(img);
+    queuePanel.appendChild(img);
   }
 }
 
@@ -189,6 +189,7 @@ function queueVideo() {
   if (vId.length > 10) {
     socket.emit("queue-new-video", { roomCode, vId });
     videoInputBox.className = "form-control";
+    videoInputBox.value = "";
   } else {
     videoInputBox.className = "form-control is-invalid";
   }
@@ -259,6 +260,7 @@ function onYouTubeIframeAPIReady() {
 
           videoQueue = data.videoQueue;
           updateVideoQueueList();
+          setSidebarHeight();
         },
         onStateChange: onPlayerStateChange,
       },
@@ -367,6 +369,18 @@ function toggleFullscreen() {
     requestFullscreen.bind(iframeDiv)();
   }
 }
+
+function setSidebarHeight() {
+  const height = playerOverlay.offsetHeight;
+  const qHeight = document.getElementById("video-queue-title").offsetHeight;
+  const rHeight = document.getElementById("room-code-title").offsetHeight;
+
+  queuePanel.setAttribute("style", `max-height: ${height - qHeight - 6}px;`);
+  userPanel.parentElement.setAttribute(
+    "style",
+    `max-height: ${height - rHeight - 6}px;`
+  );
+}
 // -------------------- helper functions --------------------
 
 // -------------------- event listener --------------------
@@ -394,5 +408,8 @@ function getScrubberLength() {
   }
 }
 window.setInterval(getScrubberLength, 100);
+
+// runs when video is resized
+new ResizeObserver(setSidebarHeight).observe(playerOverlay);
 // -------------------- other functions --------------------
 // -------------------- client side functions --------------------

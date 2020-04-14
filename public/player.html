@@ -69,9 +69,9 @@
         <div class="col-lg-1"></div>
 
         <div class="col-sm-1" id="queued-video-panel">
-          <h6>Queued Videos</h6>
+          <h6 id="video-queue-title">Queued Videos</h6>
 
-          <div class="flex-column" id="display-queued-videos"></div>
+          <div class="overflow-auto" id="display-queued-videos"></div>
         </div>
 
         <div class="col-lg-8">
@@ -86,9 +86,11 @@
         </div>
 
         <div class="col-sm-1" id="connected-user-panel">
-          <h6>Room Code: <span id="room-code"></span></h6>
+          <h6 id="room-code-title">Room Code: <span id="room-code"></span></h6>
 
-          <div class="d-flex flex-wrap" id="display-connected-users"></div>
+          <div class="overflow-auto">
+            <div class="d-flex flex-wrap" id="display-connected-users"></div>
+          </div>
         </div>
       </div>
 

@@ -1,3 +1,7 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
 .input-group {
   margin-top: 1%;
 }
@@ -41,6 +45,9 @@
   width: 100%;
   padding: 5%;
 }
+#display-queued-videos img:first-of-type {
+  background-color: #dddddd;
+}
 #display-queued-videos img:hover {
   background-color: #aaaaaa;
 }
@@ -49,6 +56,10 @@
   font-size: 14px;
   font-weight: bold;
   background: #dddddd;
+}
+
+#display-connected-users img:first-of-type {
+  background-color: #dddddd;
 }
 
 .flex-wrap img {
