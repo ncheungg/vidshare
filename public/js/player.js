@@ -199,7 +199,13 @@ function scrubberSeekVideo() {
   const rect = videoScrubberBox.getBoundingClientRect();
   const x = event.clientX;
   const fraction = (x - rect.left) / (rect.right - rect.left);
-  const time = fraction * player.getDuration();
+  let time;
+
+  if (fraction < 0.01) {
+    time = 0;
+  } else {
+    time = fraction * player.getDuration();
+  }
 
   socket.emit("seek-to", { roomCode, time });
 }

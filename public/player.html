@@ -65,58 +65,37 @@
         </div>
       </div>
 
+      <!-- primary row -->
       <div class="row no-gutters">
         <div class="col-lg-1"></div>
 
-        <div class="col-sm-1" id="queued-video-panel">
-          <h6 id="video-queue-title">Queued Videos</h6>
+        <!-- queued video panel -->
+        <div class="col-lg-1">
+          <div id="queued-video-panel">
+            <h6 id="video-queue-title">Queued Videos</h6>
 
-          <div class="overflow-auto" id="display-queued-videos"></div>
-        </div>
-
-        <div class="col-lg-8">
-          <div
-            class="embed-responsive embed-responsive-16by9"
-            id="outer-player-div"
-          >
-            <div id="player-overlay-img"></div>
-            <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-            <div id="player"></div>
+            <div class="overflow-auto" id="display-queued-videos"></div>
           </div>
-        </div>
 
-        <div class="col-sm-1" id="connected-user-panel">
-          <h6 id="room-code-title">Room Code: <span id="room-code"></span></h6>
-
-          <div class="overflow-auto">
-            <div class="d-flex flex-wrap" id="display-connected-users"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-1" style="margin: 0.5% 1% 0 -1%;">
-          <button
-            type="button"
-            class="btn btn-outline-primary btn-sm"
-            id="skip-forward"
-          >
+          <button type="button" class="btn btn-outline-primary btn-sm" id="skip-forward">
             Next Video
           </button>
         </div>
 
+        <!-- main panel -->
         <div class="col-lg-8">
+          <!-- video player -->
+          <div class="embed-responsive embed-responsive-16by9" id="outer-player-div">
+            <div id="player-overlay-img"></div>
+
+            <div id="player"></div>
+          </div>
+
           <a href="youtube.com" target="_blank" style="text-decoration: none;">
             <p class="text-primary" id="video-title"></p>
           </a>
-        </div>
-      </div>
 
-      <div class="row no-gutters">
-        <div class="col-lg-2"></div>
-
-        <div class="col-lg-8">
+          <!-- player controls -->
           <div class="row no-gutters">
             <div class="col-auto">
               <button
@@ -178,9 +157,20 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
+        <div class="col-lg-1">
+          <div id="connected-user-panel">
+            <h6 id="room-code-title">Room Code: <span id="room-code"></span></h6>
+
+            <div class="overflow-auto">
+              <div class="d-flex flex-wrap" id="display-connected-users"></div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      
     <!-- javascript -->
     <script src="js/player.js"></script>
 
