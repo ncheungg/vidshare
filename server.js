@@ -83,7 +83,7 @@ io.on("connection", function (socket) {
     } else {
       // sends out default video data
       io.sockets.to(socket.id).emit("receive-player-data", {
-        vId: "WFcjKjTq178",
+        vId: "PYxs1EvVHbM",
         time: 0,
         playerState: 1,
         videoQueue: [],
