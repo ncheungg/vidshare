@@ -264,6 +264,7 @@ function onYouTubeIframeAPIReady() {
             player.playVideo();
           }
 
+          player.mute();
           videoQueue = data.videoQueue;
           updateVideoQueueList();
           setSidebarHeight();
@@ -272,11 +273,15 @@ function onYouTubeIframeAPIReady() {
         onError: logError,
       },
       playerVars: {
-        controls: 0,
-        modestbranding: 1,
-        autoplay: 0,
+        iv_load_policy: 3,
+        enablejsapi: 1,
         disablekb: 1,
+        autoplay: 1,
+        loop: 0,
+        controls: 0,
+        showinfo: 0,
         rel: 0,
+        mode: "transparent",
       },
     });
   });
