@@ -286,9 +286,11 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerStateChange(event) {
   // sets title on video change
-  const title = event.target.getVideoData().title;
+  const { title, video_id } = event.target.getVideoData();
+
   if (title != "" && title != undefined) {
     videoTitle.innerHTML = title;
+    videoTitle.parentElement.href = `https://www.youtube.com/watch?v=${video_id}`;
   }
 
   if (event.data == 0 && videoQueue.length > 0) {
