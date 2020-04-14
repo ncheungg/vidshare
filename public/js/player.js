@@ -264,7 +264,6 @@ function onYouTubeIframeAPIReady() {
             player.playVideo();
           }
 
-          player.mute();
           videoQueue = data.videoQueue;
           updateVideoQueueList();
           setSidebarHeight();
