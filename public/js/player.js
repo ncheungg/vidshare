@@ -19,8 +19,8 @@ function getUrlParameters() {
 // -------------------- parse URL parameters --------------------
 
 // -------------------- connect to websocket --------------------
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("http://localhost:5000/");
+// const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+const socket = io.connect("http://localhost:5000/");
 
 // gets roomcode from url and sends to socket.io server
 getUrlParameters();
@@ -72,7 +72,7 @@ socket.on("queue-new-video", (data) => {
 
 // -------------------- helper functions for socket events --------------------
 function getPlayerData(id) {
-  const vId = player.getVideoUrl().split("=")[1];
+  const vId = videoTitle.parentElement.href.split("=")[1];
   const playerState = player.getPlayerState();
   const time = player.getCurrentTime();
 
@@ -269,6 +269,7 @@ function onYouTubeIframeAPIReady() {
           setSidebarHeight();
         },
         onStateChange: onPlayerStateChange,
+        onError: logError,
       },
       playerVars: {
         controls: 0,
@@ -302,6 +303,10 @@ function onPlayerStateChange(event) {
   if (event.data == 0 && videoQueue.length > 0) {
     loadNextVideo();
   }
+}
+
+function logError(event) {
+  console.log(event.data);
 }
 // -------------------- youtube player api code --------------------
 
