@@ -41,9 +41,14 @@
   text-align: center;
 }
 
+#display-queued-videos {
+  display: flex;
+  flex-wrap: wrap;
+}
 #display-queued-videos img {
   width: 100%;
   padding: 5%;
+  max-width: 250px;
 }
 #display-queued-videos img:first-of-type {
   background-color: #dddddd;
@@ -65,6 +70,7 @@
 .flex-wrap img {
   width: 40%;
   margin: 5%;
+  max-width: 5vw;
 }
 
 #video-title {
