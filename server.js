@@ -100,7 +100,10 @@ io.on("connection", function (socket) {
     // loops thru all rooms and updates usercount
     const roomCodes = Object.keys(io.sockets.adapter.rooms);
     for (let i = 0; i < roomCodes.length; i++) {
-      updateUserLengths(roomCodes[i]);
+      // only updates length in valid rooms
+      if (roomCodes[i].length == 4) {
+        updateUserLengths(roomCodes[i]);
+      }
     }
 
     console.log(socket.id, "disconnected");
