@@ -273,6 +273,8 @@ function onYouTubeIframeAPIReady() {
       },
       playerVars: {
         iv_load_policy: 3,
+        modestbranding: 1,
+        origin: "vidshare.ca",
         enablejsapi: 1,
         disablekb: 1,
         autoplay: 1,
