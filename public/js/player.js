@@ -44,9 +44,7 @@ const userPanel = document.getElementById("display-connected-users");
 const queuePanel = document.getElementById("display-queued-videos");
 const volumeButton = document.getElementById("volume-button");
 const volumeSlider = document.getElementById("volume-slider");
-const volumeSliderBar = document
-  .getElementById("volume-slider")
-  .getElementsByTagName("div")[0];
+const volumeSliderBar = document.getElementById("volume-slider").getElementsByTagName("div")[0];
 // -------------------- DOM elements --------------------
 
 // -------------------- websocket functions & code --------------------
@@ -217,9 +215,26 @@ playPauseButton.addEventListener("click", playPauseToggle);
 queueButton.addEventListener("click", queueVideo);
 videoScrubberBox.addEventListener("click", scrubberSeekVideo);
 
+// pause video with spacebar
 document.addEventListener("keyup", (key) => {
   if (key.keyCode == 32) {
     playPauseToggle();
+  }
+});
+
+// skip forward 10 seconds with right arrow
+document.addEventListener("keydown", (key) => {
+  if (key.keyCode == 39) {
+    const time = player.getCurrentTime() + 10;
+    socket.emit("seek-to", { roomCode, time });
+  }
+});
+
+// skip backwards 10 seconds with left arrow
+document.addEventListener("keydown", (key) => {
+  if (key.keyCode == 37) {
+    const time = player.getCurrentTime() - 10;
+    socket.emit("seek-to", { roomCode, time });
   }
 });
 
@@ -321,9 +336,7 @@ function logError(event) {
 // parses float into scrubber css string
 function updateScrubberLength(fraction) {
   const s = `width: ${(100 * fraction).toString()}%`;
-  document
-    .getElementById("video-watched-progress-bar")
-    .setAttribute("style", s);
+  document.getElementById("video-watched-progress-bar").setAttribute("style", s);
 }
 
 function updateVolumeBarLength(fraction) {
@@ -395,10 +408,7 @@ function setSidebarHeight() {
   const rHeight = document.getElementById("room-code-title").offsetHeight;
 
   queuePanel.setAttribute("style", `max-height: ${height - qHeight - 6}px;`);
-  userPanel.parentElement.setAttribute(
-    "style",
-    `max-height: ${height - rHeight - 6}px;`
-  );
+  userPanel.parentElement.setAttribute("style", `max-height: ${height - rHeight - 6}px;`);
 }
 // -------------------- helper functions --------------------
 
