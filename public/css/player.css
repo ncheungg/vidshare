@@ -110,3 +110,8 @@
   -o-transition: height 0.6s ease;
   transition: height 0.6s ease;
 }
+
+/* removes "more videos" overlay */
+.ytp-pause-overlay {
+  bottom: -200px;
+}
