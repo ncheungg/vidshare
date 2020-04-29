@@ -139,16 +139,16 @@ function playPauseToggle() {
 }
 
 function playVideo() {
-  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
   if (player.getPlayerState() != 1) {
     player.playVideo();
+    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
   }
 }
 
 function pauseVideo() {
-  playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
   if (player.getPlayerState() != 2) {
     player.pauseVideo();
+    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
   }
 }
 
@@ -324,8 +324,10 @@ function onPlayerStateChange(event) {
   const playerState = event.target.getPlayerState();
   if (playerState == 1) {
     socket.emit("play-video", roomCode);
+    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
   } else if (playerState == 2) {
     socket.emit("pause-video", roomCode);
+    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
   }
 }
 
