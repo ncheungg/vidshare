@@ -1,6 +1,14 @@
 // -------------------- websocket --------------------
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("http://localhost:5000/");
+let socket;
+function setWebsocket() {
+  const urlArr = window.location.href.split("/");
+  if (urlArr[2].includes("localhost")) {
+    socket = io.connect("http://localhost:5000/");
+  } else {
+    socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+  }
+}
+setWebsocket();
 // -------------------- websocket --------------------
 
 // -------------------- DOM elements --------------------
@@ -72,13 +80,12 @@ function changeToJoinRoomTab() {
   cardBody.appendChild(formDiv);
   // ----- adds form to submit room code -----
 
-  cardParagraph.innerHTML =
-    "Join an existing room with your friend's room code";
+  cardParagraph.innerHTML = "Join an existing room with your friend's room code";
 }
 
 function createRoom() {
   socket.emit("create-room", (roomCode) => {
-    location.href = `player.html?joinRoom=${roomCode}`;
+    location.href = `/rooms/${roomCode}`;
   });
 }
 
@@ -86,7 +93,7 @@ function joinRoom() {
   const form = document.getElementById("room-code-input");
   socket.emit("check-room", form.value.toLowerCase(), (roomExists) => {
     if (roomExists) {
-      location.href = `player.html?joinRoom=${form.value.toLowerCase()}`;
+      location.href = `/rooms/${form.value.toLowerCase()}`;
     } else {
       // displays invalid form
       form.className = "form-control is-invalid";

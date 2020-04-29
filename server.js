@@ -1,18 +1,35 @@
 // -------------------- app setup --------------------
 const express = require("express");
 const socket = require("socket.io");
+const path = require("path");
 
 const app = express();
-const server = app.listen(process.env.PORT || 5000, () =>
-  console.log("started server")
-);
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 // define static files
-app.use(express.static("public"));
-
+app.use(express.static(path.join(__dirname, "public")));
 // -------------------- app setup --------------------
 
-// -------------------- helper functions --------------------
+// -------------------- endpoint/route handlers --------------------
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/rooms/:roomCode", (req, res, next) => {
+  if (req.params.roomCode.length == 4) {
+    res.sendFile(path.join(__dirname, "public", "player.html"));
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/*", (req, res) => {
+  res.redirect("/");
+});
+// -------------------- endpoint/route handlers --------------------
+
+// -------------------- socket helper functions --------------------
 function joinSocketToRoom(socket, roomCode) {
   socket.join(roomCode);
   updateUserLengths(roomCode);
@@ -38,7 +55,7 @@ function checkIfRoomExists(roomCode) {
   const roomCodes = Object.keys(io.sockets.adapter.rooms);
   return roomCodes.includes(roomCode);
 }
-// -------------------- helper functions --------------------
+// -------------------- socket helper functions --------------------
 
 // -------------------- socket setup/listening functions --------------------
 const io = socket(server);
@@ -94,6 +111,7 @@ io.on("connection", function (socket) {
   // sends out player data (runs with "get-player-data")
   socket.on("receive-player-data", (data) => {
     io.sockets.to(data.id).emit("receive-player-data", data);
+    console.log(data);
   });
 
   socket.on("disconnect", () => {

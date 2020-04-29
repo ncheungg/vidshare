@@ -3,31 +3,28 @@ let i;
 let player;
 let roomCode;
 let videoQueue;
+let socket;
 // -------------------- variables --------------------
 
-// -------------------- parse URL parameters --------------------
-function getUrlParameters() {
-  const params = window.location.search.substring(1).split("&");
-  for (i = 0; i < params.length; i++) {
-    const param = params[i].split("=");
-    if (param[0] == "joinRoom") {
-      roomCode = param[1];
-      break;
-    }
+// -------------------- set variables && connect to websocket --------------------
+function setVariables() {
+  const urlArr = window.location.href.split("/");
+  if (urlArr[urlArr.length - 2] == "rooms") {
+    roomCode = urlArr[urlArr.length - 1];
   }
+
+  if (urlArr[2].includes("localhost")) {
+    socket = io.connect("http://localhost:5000/");
+  } else {
+    socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
+  }
+
+  socket.on("connect", () => {
+    socket.emit("join-room", roomCode);
+  });
 }
-// -------------------- parse URL parameters --------------------
-
-// -------------------- connect to websocket --------------------
-const socket = io.connect("https://secure-dusk-40036.herokuapp.com/");
-// const socket = io.connect("http://localhost:5000/");
-
-// gets roomcode from url and sends to socket.io server
-getUrlParameters();
-socket.on("connect", () => {
-  socket.emit("join-room", roomCode);
-});
-// -------------------- connect to websocket --------------------
+setVariables();
+// -------------------- set variables && connect to websocket --------------------
 
 // -------------------- DOM elements --------------------
 const roomCodeDisplay = document.getElementById("room-code");
@@ -123,7 +120,7 @@ function sendOutPlayerData() {
 
 function addUserToList() {
   const img = document.createElement("img");
-  img.src = "img/profilepic.png";
+  img.src = "/img/profilepic.png";
   userPanel.appendChild(img);
 }
 
@@ -277,6 +274,8 @@ function onYouTubeIframeAPIReady() {
           player.seekTo(data.time);
           if (data.playerState == 1) {
             player.playVideo();
+          } else if (data.playerState == 2) {
+            player.pauseVideo();
           }
 
           videoQueue = data.videoQueue;
@@ -292,7 +291,7 @@ function onYouTubeIframeAPIReady() {
         origin: "vidshare.ca",
         enablejsapi: 1,
         disablekb: 1,
-        autoplay: 1,
+        autoplay: 0,
         loop: 0,
         controls: 0,
         showinfo: 0,
