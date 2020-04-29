@@ -141,14 +141,12 @@ function playPauseToggle() {
 function playVideo() {
   if (player.getPlayerState() != 1) {
     player.playVideo();
-    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
   }
 }
 
 function pauseVideo() {
   if (player.getPlayerState() != 2) {
     player.pauseVideo();
-    playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
   }
 }
 
