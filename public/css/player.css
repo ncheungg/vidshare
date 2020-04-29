@@ -14,14 +14,6 @@
   margin: 5px;
 }
 
-#player-overlay-img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  bottom: 0%;
-  z-index: 1;
-}
-
 #queued-video-panel {
   height: 90%;
   background-color: #eeeeee;

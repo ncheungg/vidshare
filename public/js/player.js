@@ -28,7 +28,6 @@ setVariables();
 
 // -------------------- DOM elements --------------------
 const roomCodeDisplay = document.getElementById("room-code");
-const playerOverlay = document.getElementById("player-overlay-img");
 const playPauseButton = document.getElementById("play-pause-button");
 const skipForward = document.getElementById("skip-forward");
 const fullscreenButton = document.getElementById("fullscreen");
@@ -140,13 +139,17 @@ function playPauseToggle() {
 }
 
 function playVideo() {
-  player.playVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-pause-circle";
+  if (player.getPlayerState() != 1) {
+    player.playVideo();
+  }
 }
 
 function pauseVideo() {
-  player.pauseVideo();
   playPauseButton.getElementsByTagName("i")[0].className = "fa fa-play-circle";
+  if (player.getPlayerState() != 2) {
+    player.pauseVideo();
+  }
 }
 
 function loadNextVideo() {
@@ -207,7 +210,6 @@ function scrubberSeekVideo() {
 // -------------------- helper functions for socket events --------------------
 
 // -------------------- listeners that trigger socket events --------------------
-playerOverlay.addEventListener("click", playPauseToggle);
 playPauseButton.addEventListener("click", playPauseToggle);
 queueButton.addEventListener("click", queueVideo);
 videoScrubberBox.addEventListener("click", scrubberSeekVideo);
@@ -302,11 +304,6 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-// 4. The API will call this function when the video player is ready.
-// function onPlayerReady(event) {
-//   event.target.playVideo();
-// }
-
 // 5. The API calls this function when the player's state changes.
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
@@ -322,6 +319,13 @@ function onPlayerStateChange(event) {
 
   if (event.data == 0 && videoQueue.length > 0) {
     loadNextVideo();
+  }
+
+  const playerState = event.target.getPlayerState();
+  if (playerState == 1) {
+    socket.emit("play-video", roomCode);
+  } else if (playerState == 2) {
+    socket.emit("pause-video", roomCode);
   }
 }
 
@@ -402,7 +406,7 @@ function toggleFullscreen() {
 }
 
 function setSidebarHeight() {
-  const height = playerOverlay.offsetHeight;
+  const height = iframeDiv.offsetHeight;
   const qHeight = document.getElementById("video-queue-title").offsetHeight;
   const rHeight = document.getElementById("room-code-title").offsetHeight;
 
@@ -438,6 +442,6 @@ function getScrubberLength() {
 window.setInterval(getScrubberLength, 100);
 
 // runs when video is resized
-new ResizeObserver(setSidebarHeight).observe(playerOverlay);
+new ResizeObserver(setSidebarHeight).observe(iframeDiv);
 // -------------------- other functions --------------------
 // -------------------- client side functions --------------------
